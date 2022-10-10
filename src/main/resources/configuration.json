@@ -1019,7 +1019,7 @@
       "id": 20,
       "spellType": "STRUCTURE",
       "bidType": "NICENESS",
-      "slot": 21,
+      "slot": 1,
       "structureEffect": "DESTROY"
     },
     {
