@@ -24,6 +24,11 @@
     "initialFood": {
       "type": "number"
     },
+    "initialEvilness": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 15
+    },
     "initialGold": {
       "type": "number"
     },
@@ -78,7 +83,8 @@
     "monsters",
     "adventurers",
     "traps",
-    "rooms"
+    "rooms",
+    "spells"
   ],
   "title": "Configuration",
   "type": "object"

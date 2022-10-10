@@ -26,23 +26,23 @@
         },
         "healthPoints": {
           "type": "number",
-          "minimum": 0
+          "minimum": 1
         },
         "healValue": {
           "type": "number",
-          "minimum": 0
+          "minimum": 1
         },
         "defuseValue": {
            "type": "number",
-           "minimum": 0
+           "minimum": 1
         },
         "food": {
           "type": "number",
-          "minimum": 0
+          "minimum": 1
         },
         "gold": {
           "type": "number",
-          "minimum": 0
+          "minimum": 1
         },
         "structureEffect": {
           "type": "string",
