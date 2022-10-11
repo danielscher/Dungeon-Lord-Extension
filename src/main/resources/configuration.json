@@ -969,7 +969,7 @@
       "food": 2
     },
     {
-      "id": 12,
+      "id": 13,
       "spellType": "BUFF",
       "bidType": "ROOM",
       "slot": 3,
@@ -1044,4 +1044,5 @@
     }
   ]
 }
+
 
