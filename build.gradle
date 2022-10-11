@@ -109,7 +109,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
-    systemtestImplementation('sopra.systemtest:systemtest-api:1.5.4') { changing = true }
+    systemtestImplementation('sopra.systemtest:systemtest-api:1.5.5') { changing = true }
 
     runtimeOnly 'de.aaschmid:gradle-cpd-plugin:3.2'
 
