@@ -21,6 +21,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
     private final List<Monster> monsters;
     private final List<Trap> traps;
     private final List<Room> rooms;
+    private final List<Spell> spells;
     private int maxPlayers;
     private long randomSeed;
     private int years;
@@ -80,6 +81,23 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
         this.rooms.add(new Room(id, activation, Room.BuildingRestriction.valueOf(restriction),
                 production));
     }
+
+    @Override
+    public void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
+            String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
+            int defuseBuff) {
+        Spell spell;
+        switch (spellType){
+            case "BUFF" : spell = new Spell (id,bidType,slot,healthBuff,healBuff,defuseBuff);
+            case "RESOURCE" : //TODO;
+            case "BIDDING" : //TODO;
+            case "ROOM" : //TODO;
+            case "Structure" : //TODO;
+        }
+        this.spells.add(spell);
+    }
+
+
 
     @Override
     public void setMaxPlayers(final int maxPlayers) {

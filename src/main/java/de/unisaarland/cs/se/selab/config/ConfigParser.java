@@ -1,5 +1,7 @@
 package de.unisaarland.cs.se.selab.config;
 
+import de.unisaarland.cs.se.selab.comm.BidType;
+import de.unisaarland.cs.se.selab.model.Model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,11 +35,35 @@ public class ConfigParser {
         for (int i = 0; i < rooms.length(); i++) {
             ConfigParser.parseRoom(rooms.getJSONObject(i), builder);
         }
+        final JSONArray spells = json.getJSONArray(ModelBuilderInterface.CFG_SPELLS);
+        for (int i = 0; i < rooms.length(); i++) {
+            ConfigParser.parseSpell(spells.getJSONObject(i), builder);
+        }
         return builder.build();
     }
 
+    private static <M> void parseSpell(final JSONObject json,
+            final ModelBuilderInterface<M> builder) {
+        final int id = json.getInt(ModelBuilderInterface.CFG_ID);
+        final String spellType = json.getString(ModelBuilderInterface.CFG_SPELL_TYPE);
+        final String bidType = json.getString(ModelBuilderInterface.CFG_SPELL_BID_TYPE);
+        final int slot = json.getInt(ModelBuilderInterface.CFG_SPELL_SLOT);
+        final int food = json.getInt(ModelBuilderInterface.CFG_SPELL_FOOD);
+        final int gold = json.optInt(ModelBuilderInterface.CFG_SPELL_GOLD);
+        final String bidTypeBlocked = json.optString(
+                ModelBuilderInterface.CFG_SPELL_BID_TYPE_BLOCKED);
+        final String structureEffect = json.optString(
+                ModelBuilderInterface.CFG_SPELL_STRUCTURE_EFFECT);
+        final int healthBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_HEALTH_POINTS);
+        final int healBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_HEAL_VALUE);
+        final int defuseBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_DEFUSE_VALUE);
+
+        builder.addSpell(id, spellType, bidType, slot, food, gold, bidTypeBlocked, structureEffect,
+                healthBuff, healBuff, defuseBuff);
+    }
+
     private static <M> void parseMonster(final JSONObject json,
-                                         final ModelBuilderInterface<M> builder) {
+            final ModelBuilderInterface<M> builder) {
         final int id = json.getInt(ModelBuilderInterface.CFG_ID);
         final int hunger = json.optInt(ModelBuilderInterface.CFG_MONSTER_HUNGER);
         final int damage = json.getInt(ModelBuilderInterface.CFG_MONSTER_DAMAGE);
@@ -47,7 +73,7 @@ public class ConfigParser {
     }
 
     private static <M> void parseAdventurer(final JSONObject json,
-                                            final ModelBuilderInterface<M> builder) {
+            final ModelBuilderInterface<M> builder) {
         final int id = json.getInt(ModelBuilderInterface.CFG_ID);
         final int difficulty = json.getInt(ModelBuilderInterface.CFG_ADV_DIFFICULTY);
         final int healthPoints = json.getInt(ModelBuilderInterface.CFG_ADV_HEALTH_POINTS);
@@ -58,7 +84,7 @@ public class ConfigParser {
     }
 
     private static <M> void parseTrap(final JSONObject json,
-                                      final ModelBuilderInterface<M> builder) {
+            final ModelBuilderInterface<M> builder) {
         final int id = json.getInt(ModelBuilderInterface.CFG_ID);
         final String attack = json.getString(ModelBuilderInterface.CFG_TRAP_ATK_STRATEGY);
         final int damage = json.getInt(ModelBuilderInterface.CFG_TRAP_DAMAGE);
@@ -71,7 +97,7 @@ public class ConfigParser {
     }
 
     private static <M> void parseRoom(final JSONObject json,
-                                      final ModelBuilderInterface<M> builder) {
+            final ModelBuilderInterface<M> builder) {
         final int id = json.getInt(ModelBuilderInterface.CFG_ID);
         final int activation = json.getInt(ModelBuilderInterface.CFG_ROOM_ACTIVATION);
         final String restriction = json.getString(ModelBuilderInterface.CFG_ROOM_RESTRICTION);
