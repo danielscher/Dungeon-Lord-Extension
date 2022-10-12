@@ -197,6 +197,7 @@ public final class CombatState extends State {
         final int effectiveDamage = adventurer.damage(damage);
         if (effectiveDamage > 0) {
             if (adventurer.isDefeated()) {
+                //TODO: check if linus triggered here
                 player.getDungeon().imprisonAdventurer(adventurer);
                 connection.sendAdventurerImprisoned(adventurer.getId());
             } else {

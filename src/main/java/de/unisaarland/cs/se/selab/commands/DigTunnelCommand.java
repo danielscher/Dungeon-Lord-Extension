@@ -66,6 +66,7 @@ public class DigTunnelCommand extends PlayerCommand {
         connection.sendImpsChanged(getId(), -neededImps);
         player.digTunnel();
         graph.addTunnel(new Tunnel(this.coordinate, true));
+        //TODO: check if counter spell found
         connection.sendTunnelDug(getId(), this.coordinate);
         if (player.getNumTunnelDigsAllowed() <= 0) {
             return ActionResult.PROCEED;

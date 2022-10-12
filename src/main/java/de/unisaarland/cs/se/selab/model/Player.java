@@ -149,6 +149,7 @@ public class Player {
      * @return whether the bid type is locked
      */
     public final boolean isLocked(final BidType type) {
+        //TODO : include cursed bids
         return this.lockedTypes.contains(type);
     }
 
