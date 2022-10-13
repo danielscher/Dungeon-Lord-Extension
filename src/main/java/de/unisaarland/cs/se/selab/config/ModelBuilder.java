@@ -7,6 +7,7 @@ import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Monster;
 import de.unisaarland.cs.se.selab.model.Trap;
 import de.unisaarland.cs.se.selab.model.dungeon.Room;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -86,13 +87,13 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
     public void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
             String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
             int defuseBuff) {
-        Spell spell;
+        Spell spell = null;
         switch (spellType){
-            case "BUFF" : spell = new Spell (id,bidType,slot,healthBuff,healBuff,defuseBuff);
-            case "RESOURCE" : //TODO;
-            case "BIDDING" : //TODO;
-            case "ROOM" : //TODO;
-            case "Structure" : //TODO;
+            case "BUFF" -> spell = new BuffSpell (id,bidType,slot,healthBuff,healBuff,defuseBuff);
+            case "RESOURCE" -> spell = new ResourceSpell(id,bidType,slot,food,gold);
+            case "BIDDING" -> spell = new BiddingSpell(id,bidType,slot,bidTypeBlocked);
+            case "ROOM" -> spell = new RoomSpell(id,bidType,slot);
+            case "STRUCTURE" -> spell = new StructureSpell(id,bidType,slot,structureEffect);
         }
         this.spells.add(spell);
     }
