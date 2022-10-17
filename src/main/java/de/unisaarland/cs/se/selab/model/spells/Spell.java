@@ -11,10 +11,9 @@ public abstract class Spell {
     private int cost;
     private boolean countered;
 
-    protected Spell(int id, BidType triggerBid, int triggerSlot) {
+    protected Spell(int id, String triggerBid, int triggerSlot) {
         this.id = id;
-        this.triggerBid =
-                BidType.valueOf(String.valueOf(triggerBid));
+        this.triggerBid  = BidType.valueOf(triggerBid);
         this.triggerSlot = triggerSlot;
     }
 

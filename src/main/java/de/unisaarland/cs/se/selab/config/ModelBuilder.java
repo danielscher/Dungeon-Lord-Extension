@@ -7,7 +7,12 @@ import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Monster;
 import de.unisaarland.cs.se.selab.model.Trap;
 import de.unisaarland.cs.se.selab.model.dungeon.Room;
+import de.unisaarland.cs.se.selab.model.spells.BiddingSpell;
+import de.unisaarland.cs.se.selab.model.spells.BuffSpell;
+import de.unisaarland.cs.se.selab.model.spells.ResourceSpell;
+import de.unisaarland.cs.se.selab.model.spells.RoomSpell;
 import de.unisaarland.cs.se.selab.model.spells.Spell;
+import de.unisaarland.cs.se.selab.model.spells.StructureSpell;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -37,6 +42,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
         this.monsters = new ArrayList<>();
         this.traps = new ArrayList<>();
         this.rooms = new ArrayList<>();
+        this.spells = new ArrayList<>();
     }
 
     @Override
@@ -89,7 +95,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
             int defuseBuff) {
         Spell spell = null;
         switch (spellType){
-            case "BUFF" -> spell = new BuffSpell (id,bidType,slot,healthBuff,healBuff,defuseBuff);
+            case "BUFF" -> spell = new BuffSpell(id,bidType,slot,healthBuff,healBuff,defuseBuff);
             case "RESOURCE" -> spell = new ResourceSpell(id,bidType,slot,food,gold);
             case "BIDDING" -> spell = new BiddingSpell(id,bidType,slot,bidTypeBlocked);
             case "ROOM" -> spell = new RoomSpell(id,bidType,slot);

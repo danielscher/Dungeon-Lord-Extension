@@ -156,6 +156,13 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         this.builder.addRoom(id, activation, restriction, food, gold, imps, niceness);
     }
 
+    @Override
+    public void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
+            String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
+            int defuseBuff) {
+        //TODO:implement me.
+    }
+
 
     @Override
     public void setMaxPlayers(final int maxPlayers) {
@@ -235,5 +242,5 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                     rounds * BuildingState.MONSTERS_PER_ROUND);
         return this.builder.build();
     }
-
+//TODO : ADD SPELL VALIDATOR
 }
