@@ -1,7 +1,5 @@
 package de.unisaarland.cs.se.selab.config;
 
-import de.unisaarland.cs.se.selab.comm.BidType;
-import de.unisaarland.cs.se.selab.model.Model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -77,10 +75,12 @@ public class ConfigParser {
         final int id = json.getInt(ModelBuilderInterface.CFG_ID);
         final int difficulty = json.getInt(ModelBuilderInterface.CFG_ADV_DIFFICULTY);
         final int healthPoints = json.getInt(ModelBuilderInterface.CFG_ADV_HEALTH_POINTS);
+        final int magicPoints = json.getInt(ModelBuilderInterface.CFG_ADV_MAGIC_POINTS);
         final int healValue = json.optInt(ModelBuilderInterface.CFG_ADV_HEAL_VALUE);
         final int defuseValue = json.optInt(ModelBuilderInterface.CFG_ADV_DEFUSE_VALUE);
         final boolean charge = json.optBoolean(ModelBuilderInterface.CFG_ADV_CHARGE);
-        builder.addAdventurer(id, difficulty, healthPoints, healValue, defuseValue, charge);
+        builder.addAdventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue,
+                charge);
     }
 
     private static <M> void parseTrap(final JSONObject json,

@@ -6,6 +6,8 @@ package de.unisaarland.cs.se.selab.model;
 public class Adventurer {
 
     private final int id;
+
+    private final int magicPoints;
     private final int difficulty;
     private final int healValue;
     private final int defuseValue;
@@ -20,10 +22,11 @@ public class Adventurer {
     private int defuseBuff;
 
     public Adventurer(final int id, final int difficulty, final int healthPoints,
-            final int healValue, final int defuseValue, final boolean charge) {
+            int magicPoints, final int healValue, final int defuseValue, final boolean charge) {
         this.id = id;
         this.difficulty = difficulty;
         this.maxHealthPoints = healthPoints;
+        this.magicPoints = magicPoints;
         this.currentHealthPoints = this.maxHealthPoints;
         this.healValue = healValue;
         this.defuseValue = defuseValue;
@@ -96,6 +99,10 @@ public class Adventurer {
 
     public boolean isCharging() {
         return this.charge;
+    }
+
+    public int getMagicPoints() {
+        return magicPoints;
     }
 
     public void debuff() {

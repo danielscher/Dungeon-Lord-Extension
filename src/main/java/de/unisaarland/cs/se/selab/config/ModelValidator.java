@@ -10,8 +10,8 @@ import java.util.Set;
  * The model validator checks all constraints before inserting elements into the model builder.
  * <p>
  * The model validator combines the builder pattern with delegation to automatically validate the
- * config before creating the model.
- * It does so by delegating all function calls to another builder similar to a decorator pattern.
+ * config before creating the model. It does so by delegating all function calls to another builder
+ * similar to a decorator pattern.
  * </p>
  *
  * @param <M> the model class to be built
@@ -52,7 +52,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     }
 
     private void checkBounds(final String attrName, final int lowerBound, final int upperBound,
-                             final int value) {
+            final int value) {
         if (value < lowerBound || value > upperBound) {
             throw new IllegalArgumentException(
                     String.format("%s is required to be between %d and %d.", attrName, lowerBound,
@@ -89,7 +89,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
 
     @Override
     public void addMonster(final int id, final int hunger, final int damage, final int evilness,
-                           final String attack) {
+            final String attack) {
         checkUniqueId("Monster", this.monsterIds, id);
         checkPositiveZero("Monster " + ModelBuilderInterface.CFG_ID, id);
         checkPositiveZero("Monster " + ModelBuilderInterface.CFG_MONSTER_HUNGER, hunger);
@@ -101,17 +101,19 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
 
     @Override
     public void addAdventurer(final int id, final int difficulty, final int healthPoints,
-                              final int healValue,
-                              final int defuseValue, final boolean charge) {
+            final int magicPoints,
+            final int healValue,
+            final int defuseValue, final boolean charge) {
         checkUniqueId("Adventurer", this.adventurerIds, id);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ID, id);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DIFFICULTY, difficulty);
         checkPositiveNonZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEALTH_POINTS,
-                             healthPoints);
+                healthPoints);
+        checkPositiveNonZero("Adventurer" + ModelBuilderInterface.CFG_ADV_MAGIC_POINTS, magicPoints);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEAL_VALUE, healValue);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DEFUSE_VALUE, defuseValue);
         this.adventurerIds.add(id);
-        this.builder.addAdventurer(id, difficulty, healthPoints, healValue, defuseValue, charge);
+        this.builder.addAdventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue, charge);
     }
 
     @Override
@@ -143,8 +145,8 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
 
     @Override
     public void addRoom(final int id, final int activation, final String restriction,
-                        final int food, final int gold,
-                        final int imps, final int niceness) {
+            final int food, final int gold,
+            final int imps, final int niceness) {
         checkUniqueId("Room", this.roomIds, id);
         checkPositiveZero("Room " + ModelBuilderInterface.CFG_ID, id);
         checkPositiveNonZero("Room " + ModelBuilderInterface.CFG_ROOM_ACTIVATION, activation);
@@ -234,12 +236,12 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 ModelBuilderInterface.CFG_INITIAL_EVILNESS
         );
         checkLength("Adventurers", this.adventurerIds,
-                    this.years * (Model.MAX_ROUNDS - 1) * this.maxPlayers);
+                this.years * (Model.MAX_ROUNDS - 1) * this.maxPlayers);
         final int rounds = this.years * Model.MAX_ROUNDS;
         checkLength("Rooms", this.roomIds, rounds * BuildingState.ROOMS_PER_ROUND);
         checkLength("Traps", this.trapIds, rounds * 4);
         checkLength("Monsters", this.monsterIds,
-                    rounds * BuildingState.MONSTERS_PER_ROUND);
+                rounds * BuildingState.MONSTERS_PER_ROUND);
         return this.builder.build();
     }
 //TODO : ADD SPELL VALIDATOR

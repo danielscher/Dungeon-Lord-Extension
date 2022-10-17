@@ -53,10 +53,10 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
     }
 
     @Override
-    public void addAdventurer(final int id, final int difficulty, final int healthPoints,
+    public void addAdventurer(final int id, final int difficulty, final int healthPoints,final int magicPoints,
                               final int healValue, final int defuseValue, final boolean charge) {
         this.adventurers.add(
-                new Adventurer(id, difficulty, healthPoints, healValue, defuseValue, charge));
+                new Adventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue, charge));
     }
 
     @Override
