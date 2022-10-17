@@ -8,7 +8,7 @@ public abstract class Spell {
     private final int id;
     private final BidType triggerBid;
     private final int triggerSlot;
-    private int cost;
+    private int cost; //TODO add costs to each concrete spell
     private boolean countered;
 
     protected Spell(int id, String triggerBid, int triggerSlot) {

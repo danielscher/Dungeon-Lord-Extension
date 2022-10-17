@@ -2,9 +2,14 @@ package de.unisaarland.cs.se.selab.model;
 
 import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.dungeon.Dungeon;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * This holds all player-related data.
@@ -21,6 +26,7 @@ public class Player {
     private final Dungeon dungeon;
     private final List<Optional<BidType>> bids;
     private final List<BidType> lockedTypes;
+
     private int evilness;
     private int imps;
     private int gold;
@@ -28,6 +34,15 @@ public class Player {
     private int numTunnelDigsAllowed;
     private boolean alive;
     private int scorePoints;
+    private int numCounterSpells;
+    private int timesCountered;
+    private int timesCursed;
+    private int timeTriggeredLinus;
+
+    private Map<Integer, List<Spell>> spells = new HashMap<>() {
+    };
+    private Set<Integer> roomsCursedInRounds = new HashSet<>();
+    private List<BidType> cursedBids = new ArrayList<>();
 
     public Player(final int id,
             final String name,
@@ -65,7 +80,7 @@ public class Player {
      * @param type     the bid's type
      * @param priority the bid's priority, i.e., whether it is the first, second, or third bid
      * @return {@code true} if the bid could be placed or {@code false} if the bid or priority is
-     *         not available
+     * not available
      */
     public final boolean placeBid(final BidType type, final int priority) {
         // Bid priorities start at 1 but list indices start at 0, hence the -1
@@ -280,6 +295,18 @@ public class Player {
 
     public void changeScorePoints(final int amount) {
         this.scorePoints += amount;
+    }
+
+    public void addSpell(int round, List<Spell> spellList) {
+        spells.put(round, spellList);
+    }
+
+    public void resetBiddingSpell(){
+        cursedBids.clear();
+    }
+
+    public List<Spell> getSpellsForRound(final int round){
+        return spells.get(round);
     }
 
 }
