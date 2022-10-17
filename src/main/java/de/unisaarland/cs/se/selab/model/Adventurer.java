@@ -14,8 +14,13 @@ public class Adventurer {
     private int currentHealthPoints;
     private boolean defeated;
 
+    private int healthBuff;
+
+    private int healBuff;
+    private int defuseBuff;
+
     public Adventurer(final int id, final int difficulty, final int healthPoints,
-                      final int healValue, final int defuseValue, final boolean charge) {
+            final int healValue, final int defuseValue, final boolean charge) {
         this.id = id;
         this.difficulty = difficulty;
         this.maxHealthPoints = healthPoints;
@@ -35,11 +40,11 @@ public class Adventurer {
     }
 
     public int getHealValue() {
-        return healValue;
+        return (healValue + healBuff);
     }
 
     public int getDefuseValue() {
-        return defuseValue;
+        return (defuseValue + defuseBuff);
     }
 
     /**
@@ -67,8 +72,17 @@ public class Adventurer {
      * @param amount the amount of damage
      * @return the actual amount of health points the player was damaged (after bounds-check)
      */
-    public int damage(final int amount) {
-        final int effectiveDamage = Math.min(this.currentHealthPoints, amount);
+    public int damage(int amount) {
+        //first damage the buffed hp.
+        if (amount >= healthBuff) {
+            amount -= healBuff;
+            healthBuff = 0;
+        } else {
+            healthBuff -= amount;
+        }
+
+        //damage un-buffed hp.
+        final int effectiveDamage = Math.min(currentHealthPoints, amount);
         this.currentHealthPoints -= effectiveDamage;
         if (this.currentHealthPoints <= 0) {
             this.defeated = true;
@@ -82,5 +96,30 @@ public class Adventurer {
 
     public boolean isCharging() {
         return this.charge;
+    }
+
+    public void debuff() {
+        //reset health buff if surpassed maxHealth
+        if (currentHealthPoints + healthBuff > maxHealthPoints) {
+            this.healthBuff = 0;
+        }
+        healthBuff = 0;
+        defuseBuff = 0;
+    }
+
+    public void setHealthBuff(int healthBuff) {
+        this.healthBuff = healthBuff;
+    }
+
+    public void setHealBuff(int healBuff) {
+        if (healValue > 0) {
+            this.healBuff = healBuff;
+        }
+    }
+
+    public void setDefuseBuff(int defuseBuff) {
+        if (defuseValue > 0) {
+            this.defuseBuff = defuseBuff;
+        }
     }
 }
