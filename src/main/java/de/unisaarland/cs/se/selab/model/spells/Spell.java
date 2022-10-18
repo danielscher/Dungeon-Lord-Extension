@@ -13,7 +13,7 @@ public abstract class Spell {
 
     protected Spell(int id, String triggerBid, int triggerSlot) {
         this.id = id;
-        this.triggerBid  = BidType.valueOf(triggerBid);
+        this.triggerBid = BidType.valueOf(triggerBid);
         this.triggerSlot = triggerSlot;
     }
 
@@ -30,4 +30,13 @@ public abstract class Spell {
     public int getId() {
         return id;
     }
+
+    public BidType getTriggerBid() {
+        return triggerBid;
+    }
+
+    public int getTriggerSlot() {
+        return triggerSlot;
+    }
+
 }
