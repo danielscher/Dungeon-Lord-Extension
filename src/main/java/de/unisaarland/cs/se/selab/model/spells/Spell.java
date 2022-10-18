@@ -27,4 +27,7 @@ public abstract class Spell {
         return false;
     }
 
+    public int getId() {
+        return id;
+    }
 }
