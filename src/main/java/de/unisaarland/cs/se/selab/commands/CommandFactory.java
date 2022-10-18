@@ -121,7 +121,10 @@ public class CommandFactory implements ActionFactory<Command> {
     }
 
     @Override
-    public Command createCastCounterSpell(final int i) {
-        throw new UnsupportedOperationException("Implement me!");
+    public Command createCastCounterSpell(final int commId) {
+        final Optional<Integer> playerId = playerId(commId);
+        return playerId.isPresent()
+                ? new SpellCommand(playerId.get())
+                : new EmptyCommand();
     }
 }
