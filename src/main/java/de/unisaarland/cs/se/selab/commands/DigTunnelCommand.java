@@ -11,6 +11,7 @@ import de.unisaarland.cs.se.selab.model.dungeon.TunnelGraph;
 import de.unisaarland.cs.se.selab.state.BuildingState;
 import de.unisaarland.cs.se.selab.state.State;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -66,8 +67,13 @@ public class DigTunnelCommand extends PlayerCommand {
         connection.sendImpsChanged(getId(), -neededImps);
         player.digTunnel();
         graph.addTunnel(new Tunnel(this.coordinate, true));
-        //TODO: check if counter spell found
         connection.sendTunnelDug(getId(), this.coordinate);
+        // check if a counter spell was found.
+        if (checkIfCounterSpellFound(this.coordinate, model.getDungeonSideLength(),
+                model.getRandom())) {
+            player.addCounterSpell();
+            connection.sendCounterSpellFound(player.getId());
+        }
         if (player.getNumTunnelDigsAllowed() <= 0) {
             return ActionResult.PROCEED;
         } else {
@@ -90,10 +96,8 @@ public class DigTunnelCommand extends PlayerCommand {
     /**
      * Checks whether the given coordinate violates any tunnel digging restrictions.
      * <p>
-     * This function checks for the following restrictions:
-     *  - the coordinate must be in bounds
-     *  - the coordinate must not form any 2-by-2s
-     *  - the coordinate must not already be a tunnel
+     * This function checks for the following restrictions: - the coordinate must be in bounds - the
+     * coordinate must not form any 2-by-2s - the coordinate must not already be a tunnel
      * </p>
      *
      * @param coordinate the coordinate to check
@@ -118,10 +122,10 @@ public class DigTunnelCommand extends PlayerCommand {
         //    ^     |
         //    |     v
         //    X     3
-        final Direction[] nwVector = { Direction.NORTH, Direction.WEST, Direction.SOUTH };
-        final Direction[] neVector = { Direction.NORTH, Direction.EAST, Direction.SOUTH };
-        final Direction[] swVector = { Direction.SOUTH, Direction.WEST, Direction.NORTH };
-        final Direction[] seVector = { Direction.SOUTH, Direction.EAST, Direction.NORTH };
+        final Direction[] nwVector = {Direction.NORTH, Direction.WEST, Direction.SOUTH};
+        final Direction[] neVector = {Direction.NORTH, Direction.EAST, Direction.SOUTH};
+        final Direction[] swVector = {Direction.SOUTH, Direction.WEST, Direction.NORTH};
+        final Direction[] seVector = {Direction.SOUTH, Direction.EAST, Direction.NORTH};
 
         // Check if all neighbours in these direction are present, if yes then we have a two by two
         for (final Direction[] vector : List.of(nwVector, neVector, swVector, seVector)) {
@@ -135,5 +139,23 @@ public class DigTunnelCommand extends PlayerCommand {
 
         // Check if already a tunnel
         return graph.getTunnel(coordinate).isPresent();
+    }
+
+    /**
+     * @param coords        coords of the tunnel dug.
+     * @param dungeonLength max length of dungeon
+     * @param random        random object.
+     * @return if a counter spell is found or not
+     */
+    private boolean checkIfCounterSpellFound(Coordinate coords, final int dungeonLength,
+            Random random) {
+
+        final int xCoordinate = coords.posX();
+        final int yCoordinate = coords.posY();
+        final double result = xCoordinate * yCoordinate;
+        final double bound = Math.pow(dungeonLength, 2);
+        final double dieCast = random.nextDouble(bound);
+
+        return result > dieCast;
     }
 }
