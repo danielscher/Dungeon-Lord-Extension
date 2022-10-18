@@ -34,16 +34,17 @@ public class Player {
     private int numTunnelDigsAllowed;
     private boolean alive;
     private int scorePoints;
+
     private int numCounterSpells;
+
     private int timesCountered;
     private int timesCursed;
     private int timeTriggeredLinus;
-
     private Map<Integer, List<Spell>> spells = new HashMap<>() {
     };
+
     private Set<Integer> roomsCursedInRounds = new HashSet<>();
     private List<BidType> cursedBids = new ArrayList<>();
-
     public Player(final int id,
             final String name,
             final int initialFood,
@@ -309,4 +310,15 @@ public class Player {
         return spells.get(round);
     }
 
+    public int getNumCounterSpells() {
+        return numCounterSpells;
+    }
+
+    public void useCounterSpell() {
+        this.numCounterSpells -= 1;
+    }
+
+    public void addCounterSpell(){
+        this.numCounterSpells += 1;
+    }
 }
