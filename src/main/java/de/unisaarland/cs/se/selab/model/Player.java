@@ -45,6 +45,7 @@ public class Player {
 
     private Set<Integer> roomsCursedInRounds = new HashSet<>();
     private List<BidType> cursedBids = new ArrayList<>();
+
     public Player(final int id,
             final String name,
             final int initialFood,
@@ -298,15 +299,11 @@ public class Player {
         this.scorePoints += amount;
     }
 
-    public void addSpell(int round, List<Spell> spellList) {
-        spells.put(round, spellList);
-    }
-
-    public void resetBiddingSpell(){
+    public void resetBiddingSpell() {
         cursedBids.clear();
     }
 
-    public List<Spell> getSpellsForRound(final int round){
+    public List<Spell> getSpellsForRound(final int round) {
         return spells.get(round);
     }
 
@@ -318,7 +315,11 @@ public class Player {
         this.numCounterSpells -= 1;
     }
 
-    public void addCounterSpell(){
+    public void addCounterSpell() {
         this.numCounterSpells += 1;
+    }
+
+    public void addSpell(List<Spell> triggeredSpells, final int round) {
+        spells.put(round, triggeredSpells);
     }
 }
