@@ -122,6 +122,10 @@ public class Tunnel {
     public Optional<Room> getRoom() {
         return Optional.ofNullable(this.room);
     }
+    /**deletes the room from the tunnel*/
+    public void destroyRoom(){
+        this.room = null;
+    }
 
     public boolean isConquered() {
         return this.conquered;
