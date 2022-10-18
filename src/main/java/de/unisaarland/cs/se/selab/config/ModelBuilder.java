@@ -153,7 +153,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
                 this.adventurers,
                 this.traps,
                 this.rooms,
-                this.randomSeed,
+                spells, this.randomSeed,
                 this.maxPlayers,
                 this.years,
                 this.dungeonSideLength,
