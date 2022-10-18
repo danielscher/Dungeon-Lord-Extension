@@ -400,4 +400,7 @@ public class Model {
         Collections.shuffle(this.rooms, this.random);
         Collections.shuffle(this.spells, this.random);
     }
+    public Random getRandom(){
+        return this.random;
+    }
 }
