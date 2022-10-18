@@ -1,5 +1,6 @@
 package de.unisaarland.cs.se.selab.model;
 
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.dungeon.Dungeon;
 import de.unisaarland.cs.se.selab.model.dungeon.Room;
 import de.unisaarland.cs.se.selab.model.spells.Spell;
@@ -217,6 +218,18 @@ public class Model {
      */
     public final Optional<Room> getAvailableRoom(final int id) {
         return this.availableRooms.stream().filter(room -> room.getId() == id).findFirst();
+    }
+
+    /**
+     * search for a spell that is triggered by bid and slot
+     *
+     * @param bid  Category that triggers the spell
+     * @param slot slot number that triggers the spell
+     * @return a list of spells that answer the condition.
+     */
+    public final List<Spell> getTriggeredSpell(BidType bid, int slot) {
+        return this.availableSpells.stream().filter(spell -> spell.getTriggerBid() == bid)
+                .filter(spell -> spell.getTriggerSlot() == slot).toList();
     }
 
     /**
