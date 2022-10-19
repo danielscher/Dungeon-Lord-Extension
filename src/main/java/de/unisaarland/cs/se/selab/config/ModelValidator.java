@@ -1,7 +1,10 @@
 package de.unisaarland.cs.se.selab.config;
 
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.AttackStrategy;
 import de.unisaarland.cs.se.selab.model.Model;
+import de.unisaarland.cs.se.selab.model.spells.SpellType;
+import de.unisaarland.cs.se.selab.model.spells.SpellType.STRUCTURE_EFFECT;
 import de.unisaarland.cs.se.selab.state.BuildingState;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +26,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     private final Set<Integer> adventurerIds;
     private final Set<Integer> trapIds;
     private final Set<Integer> roomIds;
+    private final Set<Integer> spellIds;
 
     private final Set<String> setProperties;
     private int years;
@@ -35,6 +39,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         this.trapIds = new HashSet<>();
         this.roomIds = new HashSet<>();
         this.setProperties = new HashSet<>();
+        this.spellIds = new HashSet<>();
     }
 
     /////////////////////////////////////////////
@@ -109,11 +114,13 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DIFFICULTY, difficulty);
         checkPositiveNonZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEALTH_POINTS,
                 healthPoints);
-        checkPositiveNonZero("Adventurer" + ModelBuilderInterface.CFG_ADV_MAGIC_POINTS, magicPoints);
+        checkPositiveNonZero("Adventurer" + ModelBuilderInterface.CFG_ADV_MAGIC_POINTS,
+                magicPoints);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEAL_VALUE, healValue);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DEFUSE_VALUE, defuseValue);
         this.adventurerIds.add(id);
-        this.builder.addAdventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue, charge);
+        this.builder.addAdventurer(id, difficulty, healthPoints, magicPoints, healValue,
+                defuseValue, charge);
     }
 
     @Override
@@ -162,7 +169,36 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     public void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
             String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
             int defuseBuff) {
-        //TODO:implement me.
+        checkUniqueId("Spell", this.spellIds, id);
+        // check if spell type is legal
+        switch (SpellType.valueOf(spellType)) {
+            case RESOURCE, BUFF, ROOM:
+                break;
+            case BIDDING: {
+                BidType.valueOf(bidTypeBlocked);
+                break;
+            }
+            case STRUCTURE: {
+                STRUCTURE_EFFECT.valueOf(structureEffect);
+            }
+            break;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("%s is an illegal spell type", spellType));
+        }
+        BidType.valueOf(bidType);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_ID, id);
+        checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_SLOT, slot);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_FOOD, food);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_GOLD, gold);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEALTH_POINTS, healthBuff);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL_VALUE, healBuff);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE_VALUE, defuseBuff);
+        this.spellIds.add(id);
+        this.builder.addSpell(id, spellType, bidType, slot, food, gold, bidTypeBlocked,
+                structureEffect, healthBuff, healBuff, defuseBuff);
+
+
     }
 
 
