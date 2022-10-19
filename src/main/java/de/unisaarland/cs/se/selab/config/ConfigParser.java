@@ -34,7 +34,7 @@ public class ConfigParser {
             ConfigParser.parseRoom(rooms.getJSONObject(i), builder);
         }
         final JSONArray spells = json.getJSONArray(ModelBuilderInterface.CFG_SPELLS);
-        for (int i = 0; i < rooms.length(); i++) {
+        for (int i = 0; i < spells.length(); i++) {
             ConfigParser.parseSpell(spells.getJSONObject(i), builder);
         }
         return builder.build();
@@ -77,7 +77,7 @@ public class ConfigParser {
         final int id = json.getInt(ModelBuilderInterface.CFG_ID);
         final int difficulty = json.getInt(ModelBuilderInterface.CFG_ADV_DIFFICULTY);
         final int healthPoints = json.getInt(ModelBuilderInterface.CFG_ADV_HEALTH_POINTS);
-        final int magicPoints = json.getInt(ModelBuilderInterface.CFG_ADV_MAGIC_POINTS);
+        final int magicPoints = json.optInt(ModelBuilderInterface.CFG_ADV_MAGIC_POINTS);
         final int healValue = json.optInt(ModelBuilderInterface.CFG_ADV_HEAL_VALUE);
         final int defuseValue = json.optInt(ModelBuilderInterface.CFG_ADV_DEFUSE_VALUE);
         final boolean charge = json.optBoolean(ModelBuilderInterface.CFG_ADV_CHARGE);
