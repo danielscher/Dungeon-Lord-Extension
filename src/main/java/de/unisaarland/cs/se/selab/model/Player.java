@@ -40,9 +40,7 @@ public class Player {
     private int timesCountered;
     private int timesCursed;
     private int timeTriggeredLinus;
-    private Map<Integer, List<Spell>> spells = new HashMap<>() {
-    };
-
+    private Map<Integer, List<Spell>> spells = new HashMap<>();
     private Set<Integer> roomsCursedInRounds = new HashSet<>();
     private List<List<BidType>> cursedBids = new ArrayList<>();
     private boolean spellCountered;
@@ -171,7 +169,7 @@ public class Player {
     }
 
     public boolean isCursed(final BidType bid, final int round) {
-        return this.cursedBids.get(round).contains(bid);
+        return this.cursedBids.get(round - 1).contains(bid);
     }
 
     /**
@@ -223,6 +221,10 @@ public class Player {
         return this.monsters.stream()
                 .filter(monster -> monster.getId() == monsterId)
                 .findFirst();
+    }
+
+    public int getNumMonsters() {
+        return monsters.size();
     }
 
     /**
@@ -304,16 +306,16 @@ public class Player {
     }
 
     public void curseBid(BidType bid, final int round) {
-        cursedBids.get(round).add(bid);
+        cursedBids.get(round - 1).add(bid);
         curse();
     }
 
-    public void resetBiddingSpell() {
-        cursedBids.clear();
+    public void resetBiddingSpell(final int round) {
+        cursedBids.remove(round - 1);
     }
 
     public List<Spell> getSpellsForRound(final int round) {
-        return spells.get(round);
+        return spells.get(round - 1);
     }
 
     public int getRoundOfSpell(Spell spell) {
@@ -336,7 +338,7 @@ public class Player {
     }
 
     public void addSpell(List<Spell> triggeredSpells, final int round) {
-        spells.put(round, triggeredSpells);
+        spells.put(round - 1, triggeredSpells);
     }
 
     public boolean hasCountered() {
@@ -366,4 +368,16 @@ public class Player {
         roomsCursedInRounds.clear();
     }
 
+    public void triggerLinus() {
+        this.timeTriggeredLinus++;
+    }
+
+
+    public Monster removeMonster(final int index) {
+        return this.monsters.remove(index);
+    }
+
+    public void removeSpells() {
+        this.spells.clear();
+    }
 }
