@@ -87,6 +87,19 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         }
     }
 
+    private void checkAttrIsNull(final String attr) {
+        if (!attr.equals("")) {
+            throw new IllegalArgumentException(String.format("%s isn't legal in this spell", attr));
+        }
+    }
+
+    private void checkAttrIsNull(final String attrName, final int attr) {
+        if (attr != 0) {
+            throw new IllegalArgumentException(
+                    String.format("%s=%d is not legal in this spell", attrName, attr));
+        }
+    }
+
     /////////////////////////////////////////////
     //            BUILDER FUNCTIONS            //
     /////////////////////////////////////////////
@@ -170,30 +183,64 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
             String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
             int defuseBuff) {
         checkUniqueId("Spell", this.spellIds, id);
-        // check if spell type is legal
-        switch (SpellType.valueOf(spellType)) {
-            case RESOURCE, BUFF, ROOM:
-                break;
-            case BIDDING: {
-                BidType.valueOf(bidTypeBlocked);
-                break;
-            }
-            case STRUCTURE: {
-                STRUCTURE_EFFECT.valueOf(structureEffect);
-            }
-            break;
-            default:
-                throw new IllegalArgumentException(
-                        String.format("%s is an illegal spell type", spellType));
-        }
         BidType.valueOf(bidType);
         checkPositiveZero("Spell" + ModelBuilderInterface.CFG_ID, id);
         checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_SLOT, slot);
-        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_FOOD, food);
-        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_GOLD, gold);
-        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEALTH_POINTS, healthBuff);
-        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL_VALUE, healBuff);
-        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE_VALUE, defuseBuff);
+        // check if spell type is legal
+        // and if only the needed attributes are present.
+        switch (SpellType.valueOf(spellType)) {
+            case RESOURCE -> {
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_FOOD, food);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_GOLD, gold);
+                checkAttrIsNull(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkAttrIsNull("healthBuff", healthBuff);
+                checkAttrIsNull("healBuff", healBuff);
+                checkAttrIsNull("defuseBuff", defuseBuff);
+            }
+            case BUFF -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                checkAttrIsNull(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEALTH_POINTS,
+                        healthBuff);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL_VALUE,
+                        healBuff);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE_VALUE,
+                        defuseBuff);
+            }
+            case ROOM -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                checkAttrIsNull(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkAttrIsNull("healthBuff", healthBuff);
+                checkAttrIsNull("healBuff", healBuff);
+                checkAttrIsNull("defuseBuff", defuseBuff);
+            }
+            case BIDDING -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                BidType.valueOf(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkPositiveNonZero("healthBuff", healthBuff);
+                checkPositiveNonZero("healBuff", healBuff);
+                checkPositiveNonZero("defuseBuff", defuseBuff);
+            }
+            case STRUCTURE -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                checkAttrIsNull(bidTypeBlocked);
+                STRUCTURE_EFFECT.valueOf(structureEffect);
+                checkPositiveNonZero("healthBuff", healthBuff);
+                checkPositiveNonZero("healBuff", healBuff);
+                checkPositiveNonZero("defuseBuff", defuseBuff);
+            }
+            default -> throw new IllegalArgumentException(
+                    String.format("%s is an illegal spell type", spellType));
+        }
+
         this.spellIds.add(id);
         this.builder.addSpell(id, spellType, bidType, slot, food, gold, bidTypeBlocked,
                 structureEffect, healthBuff, healBuff, defuseBuff);
