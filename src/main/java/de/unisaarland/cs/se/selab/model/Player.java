@@ -44,7 +44,8 @@ public class Player {
     };
 
     private Set<Integer> roomsCursedInRounds = new HashSet<>();
-    private List<BidType> cursedBids = new ArrayList<>();
+    private List<List<BidType>> cursedBids = new ArrayList<>();
+    private boolean spellCountered;
 
     public Player(final int id,
             final String name,
@@ -166,8 +167,11 @@ public class Player {
      * @return whether the bid type is locked
      */
     public final boolean isLocked(final BidType type) {
-        //TODO : include cursed bids
         return this.lockedTypes.contains(type);
+    }
+
+    public boolean isCursed(final BidType bid, final int round) {
+        return this.cursedBids.get(round).contains(bid);
     }
 
     /**
@@ -299,6 +303,11 @@ public class Player {
         this.scorePoints += amount;
     }
 
+    public void curseBid(BidType bid, final int round) {
+        cursedBids.get(round).add(bid);
+        curse();
+    }
+
     public void resetBiddingSpell() {
         cursedBids.clear();
     }
@@ -307,12 +316,19 @@ public class Player {
         return spells.get(round);
     }
 
+    public int getRoundOfSpell(Spell spell) {
+        return spells.entrySet().stream().filter(entry -> entry.getValue().contains(spell))
+                .findFirst().get().getKey();
+    }
+
     public int getNumCounterSpells() {
         return numCounterSpells;
     }
 
     public void useCounterSpell() {
         this.numCounterSpells -= 1;
+        this.timesCountered += 1;
+        this.spellCountered = true;
     }
 
     public void addCounterSpell() {
@@ -322,4 +338,32 @@ public class Player {
     public void addSpell(List<Spell> triggeredSpells, final int round) {
         spells.put(round, triggeredSpells);
     }
+
+    public boolean hasCountered() {
+        return this.spellCountered;
+    }
+
+    public void resetCounterFlag() {
+        this.spellCountered = false;
+    }
+
+    /**
+     * increments timeCursedCounter by 1.
+     */
+    public void curse() {
+        timesCursed++;
+    }
+
+    public void curseRooms(final int round) {
+        if (roomsCursedInRounds.contains(round)) {
+            return;
+        }
+        roomsCursedInRounds.add(round);
+        curse();
+    }
+
+    public void clearRoomCurse() {
+        roomsCursedInRounds.clear();
+    }
+
 }
