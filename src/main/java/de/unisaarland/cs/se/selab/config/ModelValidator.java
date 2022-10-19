@@ -100,6 +100,46 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         }
     }
 
+    private void checkResources(final int food, final int gold) {
+        if (food <= 0 && gold <= 0) {
+            throw new IllegalArgumentException(
+                    "Resource spell missing both resources");
+        }
+        if (food > 0) {
+            checkPositiveNonZero("Food", food);
+            checkPositiveZero("gold", gold);
+
+        }
+        if (gold > 0) {
+            checkPositiveNonZero("Gold", gold);
+            checkPositiveZero("food", food);
+
+        }
+    }
+
+    /**
+     * checks if at least one value is present and that none of the values are negative.
+     */
+    private void checkBuffs(final int health, final int heal, final int defuse) {
+        if (health <= 0 && heal <= 0 && defuse <= 0) {
+            throw new IllegalArgumentException(
+                    "Buff spell missing buff values");
+        }
+        if (health < 0 || heal < 0 || defuse < 0) {
+            throw new IllegalArgumentException(
+                    "Buff values cannot be negative");
+        }
+        if (health > 0) {
+            checkPositiveNonZero("HealthBuff", health);
+        }
+        if (heal > 0) {
+            checkPositiveNonZero("HealBuff", heal);
+        }
+        if (defuse > 0) {
+            checkPositiveNonZero("DefuseBuff", defuse);
+        }
+    }
+
     /////////////////////////////////////////////
     //            BUILDER FUNCTIONS            //
     /////////////////////////////////////////////
@@ -127,7 +167,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DIFFICULTY, difficulty);
         checkPositiveNonZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEALTH_POINTS,
                 healthPoints);
-        checkPositiveNonZero("Adventurer" + ModelBuilderInterface.CFG_ADV_MAGIC_POINTS,
+        checkPositiveZero("Adventurer" + ModelBuilderInterface.CFG_ADV_MAGIC_POINTS,
                 magicPoints);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEAL_VALUE, healValue);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DEFUSE_VALUE, defuseValue);
@@ -199,8 +239,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         // and if only the needed attributes are present.
         switch (SpellType.valueOf(spellType)) {
             case RESOURCE -> {
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_FOOD, food);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_GOLD, gold);
+                checkResources(food, gold);
                 checkAttrIsNull(bidTypeBlocked);
                 checkAttrIsNull(structureEffect);
                 checkAttrIsNull("healthBuff", healthBuff);
@@ -212,12 +251,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 checkAttrIsNull("gold", gold);
                 checkAttrIsNull(bidTypeBlocked);
                 checkAttrIsNull(structureEffect);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HP,
-                        healthBuff);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL,
-                        healBuff);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE,
-                        defuseBuff);
+                checkBuffs(healthBuff, healBuff, defuseBuff);
             }
             case ROOM -> {
                 checkAttrIsNull("food", food);
@@ -233,18 +267,18 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 checkAttrIsNull("gold", gold);
                 BidType.valueOf(bidTypeBlocked);
                 checkAttrIsNull(structureEffect);
-                checkPositiveNonZero("healthBuff", healthBuff);
-                checkPositiveNonZero("healBuff", healBuff);
-                checkPositiveNonZero("defuseBuff", defuseBuff);
+                checkAttrIsNull("healthBuff", healthBuff);
+                checkAttrIsNull("healBuff", healBuff);
+                checkAttrIsNull("defuseBuff", defuseBuff);
             }
             case STRUCTURE -> {
                 checkAttrIsNull("food", food);
                 checkAttrIsNull("gold", gold);
                 checkAttrIsNull(bidTypeBlocked);
                 STRUCTUREEFFECT.valueOf(structureEffect);
-                checkPositiveNonZero("healthBuff", healthBuff);
-                checkPositiveNonZero("healBuff", healBuff);
-                checkPositiveNonZero("defuseBuff", defuseBuff);
+                checkAttrIsNull("healthBuff", healthBuff);
+                checkAttrIsNull("healBuff", healBuff);
+                checkAttrIsNull("defuseBuff", defuseBuff);
             }
             default -> throw new IllegalArgumentException(
                     String.format("%s is an illegal spell type", spellType));
@@ -333,6 +367,9 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         checkLength("Traps", this.trapIds, rounds * 4);
         checkLength("Monsters", this.monsterIds,
                 rounds * BuildingState.MONSTERS_PER_ROUND);
+        checkLength("Spells", this.spellIds, this.years * Model.MAX_ROUNDS * 3);
         return this.builder.build();
     }
+
+
 }
