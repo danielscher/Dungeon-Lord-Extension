@@ -41,6 +41,7 @@ public class SpellCommand extends PlayerCommand {
         }
 
         player.useCounterSpell();
+        connection.sendCounterSpellCast(player.getId());
 
         return ActionResult.PROCEED;
     }
