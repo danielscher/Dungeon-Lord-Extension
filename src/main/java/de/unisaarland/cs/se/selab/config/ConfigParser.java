@@ -46,7 +46,7 @@ public class ConfigParser {
         final String spellType = json.getString(ModelBuilderInterface.CFG_SPELL_TYPE);
         final String bidType = json.getString(ModelBuilderInterface.CFG_SPELL_BID_TYPE);
         final int slot = json.getInt(ModelBuilderInterface.CFG_SPELL_SLOT);
-        final int food = json.getInt(ModelBuilderInterface.CFG_SPELL_FOOD);
+        final int food = json.optInt(ModelBuilderInterface.CFG_SPELL_FOOD);
         final int gold = json.optInt(ModelBuilderInterface.CFG_SPELL_GOLD);
         final String bidTypeBlocked = json.optString(
                 ModelBuilderInterface.CFG_SPELL_BID_TYPE_BLOCKED);
