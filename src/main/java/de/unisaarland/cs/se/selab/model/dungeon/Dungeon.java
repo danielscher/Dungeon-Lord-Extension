@@ -149,11 +149,13 @@ public class Dungeon {
 
     /**
      * Imprison the given adventurer.
+     * and check if he had magic points
      *
      * @param adventurer the defeated adventurer
      */
-    public void imprisonAdventurer(final Adventurer adventurer) {
+    public boolean imprisonAdventurer(final Adventurer adventurer) {
         this.prison.add(adventurer);
+        return adventurer.getMagicPoints() > 0;
     }
 
     /**
@@ -193,4 +195,11 @@ public class Dungeon {
         return room;
     }
 
+    /**
+     *
+     * @return the sum of magic points of all the adventurers in the queue.
+     */
+    public int getAdventurerMagicPoints() {
+        return queuingAdventurers.stream().map(Adventurer::getMagicPoints).reduce(0,Integer::sum);
+    }
 }
