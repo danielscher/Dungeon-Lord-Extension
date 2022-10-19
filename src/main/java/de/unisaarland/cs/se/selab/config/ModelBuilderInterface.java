@@ -56,11 +56,11 @@ public interface ModelBuilderInterface<M> {
     String CFG_SPELL_SLOT = "slot";
     String CFG_SPELL_FOOD = "food";
     String CFG_SPELL_GOLD = "gold";
-    String CFG_SPELL_BID_TYPE_BLOCKED = "bidTypeBlocked";
-    String CFG_SPELL_STRUCTURE_EFFECT = "structureEffect";
-    String CFG_SPELL_HEALTH_POINTS = "healthPoints";
-    String CFG_SPELL_HEAL_VALUE = "healValue";
-    String CFG_SPELL_DEFUSE_VALUE = "defuseValue";
+    String CFG_SPELL_BLOCKED = "bidTypeBlocked";
+    String CFG_SPELL_STRUCT = "structureEffect";
+    String CFG_SPELL_HP = "healthPoints";
+    String CFG_SPELL_HEAL = "healValue";
+    String CFG_SPELL_DEFUSE = "defuseValue";
 
 
     void addMonster(int id, int hunger, int damage, int evilness,
@@ -76,9 +76,7 @@ public interface ModelBuilderInterface<M> {
     void addRoom(int id, int activation, String restriction, int food, int gold, int imps,
             int niceness);
 
-    void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
-            String bidTypeBlocked, String structureEffect,
-            int healthBuff, int healBuff, int defuseBuff);
+    void addSpell(SpellAttrContainer container);
 
 
     void setMaxPlayers(int maxPlayers);

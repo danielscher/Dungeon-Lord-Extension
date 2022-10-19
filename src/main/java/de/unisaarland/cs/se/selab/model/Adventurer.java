@@ -22,7 +22,8 @@ public class Adventurer {
     private int defuseBuff;
 
     public Adventurer(final int id, final int difficulty, final int healthPoints,
-            int magicPoints, final int healValue, final int defuseValue, final boolean charge) {
+            final int magicPoints, final int healValue, final int defuseValue,
+            final boolean charge) {
         this.id = id;
         this.difficulty = difficulty;
         this.maxHealthPoints = healthPoints;
@@ -75,17 +76,18 @@ public class Adventurer {
      * @param amount the amount of damage
      * @return the actual amount of health points the player was damaged (after bounds-check)
      */
-    public int damage(int amount) {
+    public int damage(final int amount) {
         //first damage the buffed hp.
+        int damage = amount;
         if (amount >= healthBuff) {
-            amount -= healBuff;
+            damage -= healBuff;
             healthBuff = 0;
         } else {
-            healthBuff -= amount;
+            healthBuff -= damage;
         }
 
         //damage un-buffed hp.
-        final int effectiveDamage = Math.min(currentHealthPoints, amount);
+        final int effectiveDamage = Math.min(currentHealthPoints, damage);
         this.currentHealthPoints -= effectiveDamage;
         if (this.currentHealthPoints <= 0) {
             this.defeated = true;
@@ -115,7 +117,7 @@ public class Adventurer {
         defuseBuff = 0;
     }
 
-    public void setHealthBuff(int healthBuff) {
+    public void setHealthBuff(final int healthBuff) {
         this.healthBuff = healthBuff;
     }
 
@@ -124,7 +126,7 @@ public class Adventurer {
      *
      * @param healBuff the amount of buff
      */
-    public void setHealBuff(int healBuff) {
+    public void setHealBuff(final int healBuff) {
         if (healValue > 0) {
             this.healBuff = healBuff;
         }
@@ -135,7 +137,7 @@ public class Adventurer {
      *
      * @param defuseBuff the amount of buff
      */
-    public void setDefuseBuff(int defuseBuff) {
+    public void setDefuseBuff(final int defuseBuff) {
         if (defuseValue > 0) {
             this.defuseBuff = defuseBuff;
         }

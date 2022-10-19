@@ -88,7 +88,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     }
 
     private void checkAttrIsNull(final String attr) {
-        if (!attr.equals("")) {
+        if (!"".equals(attr)) {
             throw new IllegalArgumentException(String.format("%s isn't legal in this spell", attr));
         }
     }
@@ -179,9 +179,18 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     }
 
     @Override
-    public void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
-            String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
-            int defuseBuff) {
+    public void addSpell(final SpellAttrContainer container) {
+        final int id = container.id();
+        final String spellType = container.spellType();
+        final String bidType = container.bidType();
+        final int slot = container.slot();
+        final String bidTypeBlocked = container.bidTypeBlocked();
+        final int food = container.food();
+        final int gold = container.gold();
+        final String structureEffect = container.structureEffect();
+        final int healthBuff = container.healthBuff();
+        final int healBuff = container.healBuff();
+        final int defuseBuff = container.defuseBuff();
         checkUniqueId("Spell", this.spellIds, id);
         BidType.valueOf(bidType);
         checkPositiveZero("Spell" + ModelBuilderInterface.CFG_ID, id);
@@ -203,11 +212,11 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 checkAttrIsNull("gold", gold);
                 checkAttrIsNull(bidTypeBlocked);
                 checkAttrIsNull(structureEffect);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEALTH_POINTS,
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HP,
                         healthBuff);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL_VALUE,
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL,
                         healBuff);
-                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE_VALUE,
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE,
                         defuseBuff);
             }
             case ROOM -> {
@@ -242,8 +251,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         }
 
         this.spellIds.add(id);
-        this.builder.addSpell(id, spellType, bidType, slot, food, gold, bidTypeBlocked,
-                structureEffect, healthBuff, healBuff, defuseBuff);
+        this.builder.addSpell(container);
 
 
     }

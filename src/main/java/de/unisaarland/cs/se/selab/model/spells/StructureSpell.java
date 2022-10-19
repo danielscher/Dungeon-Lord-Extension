@@ -10,19 +10,19 @@ public class StructureSpell extends Spell {
 
     final boolean conquer;
 
-    public StructureSpell(int id, String triggerBid,
-            int triggerSlot, String structureEffect) {
+    public StructureSpell(final int id, final String triggerBid,
+            final int triggerSlot, final String structureEffect) {
         super(id, triggerBid, triggerSlot, 5);
-        this.conquer = structureEffect.equals("CONQUER");
+        this.conquer = "CONQUER".equals(structureEffect);
     }
 
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection) {
+    public boolean cast(final Player player, final ConnectionWrapper connection) {
         if (conquer) {
             return true;
         }
-        Optional<Room> room = player.getDungeon().destroyRoom();
+        final Optional<Room> room = player.getDungeon().destroyRoom();
         if (room.isPresent()) {
             final int roomId = room.get().getId();
             connection.sendRoomRemoved(player.getId(), roomId);

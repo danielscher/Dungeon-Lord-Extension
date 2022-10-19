@@ -39,10 +39,10 @@ public class Player {
 
     private int timesCountered;
     private int timesCursed;
-    private int timeTriggeredLinus;
-    private Map<Integer, List<Spell>> spells = new HashMap<>();
-    private Set<Integer> roomsCursedInRounds = new HashSet<>();
-    private List<List<BidType>> cursedBids = new ArrayList<>();
+    private int timesTriggeredLinus;
+    private final Map<Integer, List<Spell>> spells = new HashMap<>();
+    private final Set<Integer> roomsCursedInRounds = new HashSet<>();
+    private final List<List<BidType>> cursedBids = new ArrayList<>();
     private boolean spellCountered;
 
     public Player(final int id,
@@ -305,9 +305,8 @@ public class Player {
         this.scorePoints += amount;
     }
 
-    public void curseBid(BidType bid, final int round) {
+    public void curseBid(final BidType bid, final int round) {
         cursedBids.get(round - 1).add(bid);
-        curse();
     }
 
     public void resetBiddingSpell(final int round) {
@@ -318,7 +317,7 @@ public class Player {
         return spells.get(round - 1);
     }
 
-    public int getRoundOfSpell(Spell spell) {
+    public int getRoundOfSpell(final Spell spell) {
         return spells.entrySet().stream().filter(entry -> entry.getValue().contains(spell))
                 .findFirst().get().getKey();
     }
@@ -337,7 +336,7 @@ public class Player {
         this.numCounterSpells += 1;
     }
 
-    public void addSpell(List<Spell> triggeredSpells, final int round) {
+    public void addSpell(final List<Spell> triggeredSpells, final int round) {
         spells.put(round - 1, triggeredSpells);
     }
 
@@ -361,7 +360,6 @@ public class Player {
             return;
         }
         roomsCursedInRounds.add(round);
-        curse();
     }
 
     public void clearRoomCurse() {
@@ -369,7 +367,7 @@ public class Player {
     }
 
     public void triggerLinus() {
-        this.timeTriggeredLinus++;
+        this.timesTriggeredLinus++;
     }
 
 
@@ -379,5 +377,17 @@ public class Player {
 
     public void removeSpells() {
         this.spells.clear();
+    }
+
+    public Integer getTimesCursed() {
+        return timesCursed;
+    }
+
+    public Integer getTimesLinusTriggered() {
+        return timesTriggeredLinus;
+    }
+
+    public Integer gettimesCountered() {
+        return timesCountered;
     }
 }

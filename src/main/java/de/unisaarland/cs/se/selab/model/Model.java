@@ -232,8 +232,8 @@ public class Model {
      * @param slot slot number that triggers the spell
      * @return a list of spells that answer the condition.
      */
-    public final List<Spell> getTriggeredSpell(BidType bid, int slot) {
-        List<Spell> spells = this.availableSpells.stream()
+    public final List<Spell> getTriggeredSpell(final BidType bid, final int slot) {
+        final List<Spell> spells = this.availableSpells.stream()
                 .filter(spell -> spell.getTriggerBid() == bid)
                 .filter(spell -> spell.getTriggerSlot() == slot).toList();
         spells.forEach(availableSpells::remove);

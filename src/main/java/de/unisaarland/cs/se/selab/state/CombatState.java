@@ -75,7 +75,7 @@ public final class CombatState extends State {
         return ActionResult.PROCEED;
     }
 
-    private void resetBuffs(Player player) {
+    private void resetBuffs(final Player player) {
         player.getDungeon().getAllAdventurers().forEach(Adventurer::debuff);
     }
 
@@ -262,6 +262,9 @@ public final class CombatState extends State {
         titles.add(Player::getImps);                                           // Imps
         titles.add(player -> player.getGold() + player.getFood());             // Riches
         titles.add(player -> player.getDungeon().getNumUnconqueredTiles());    // Battle
+        titles.add(Player::getTimesCursed);                                    // Magic Proof
+        titles.add(Player::getTimesLinusTriggered);                            // Penguin Visit
+        titles.add(Player::gettimesCountered);                                 // Counter Strike
 
         // Evaluate all titles.
         for (final Function<Player, Integer> title : titles) {
@@ -311,12 +314,14 @@ public final class CombatState extends State {
         final int totalMagicPoints = linusPresent ? advMagicPoints + 3 : advMagicPoints;
         boolean earlyConquerFlag = false;
         // cast all spells in FIFO.
-        for (Spell spell : player.getSpellsForRound(round)) {
+        for (final Spell spell : player.getSpellsForRound(round)) {
             // skip spell if adventurers don't have enough magic points.
             if (spell.getCost() > totalMagicPoints) {
                 continue;
             }
             connection.sendSpellCast(spell.getId(), player.getId());
+            // increment times player withstood spells.
+            player.curse();
             // check if a player can counter.
             if (player.getNumCounterSpells() > 0) {
                 // handle player action.
@@ -354,7 +359,7 @@ public final class CombatState extends State {
             connection.sendArchMageArrived(player.getId());
             final int monsterAmount = player.getNumMonsters();
             if (monsterAmount > 0) {
-                Monster removedMonster = player.removeMonster(random.nextInt(monsterAmount));
+                final Monster removedMonster = player.removeMonster(random.nextInt(monsterAmount));
                 connection.sendMonsterRemoved(player.getId(), removedMonster.getId());
             }
             return true;

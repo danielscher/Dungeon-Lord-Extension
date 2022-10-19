@@ -8,14 +8,14 @@ public class BiddingSpell extends Spell {
 
     final BidType blockBidType;
 
-    public BiddingSpell(int id, String triggerBid,
-            int triggerSlot, String blockBidType) {
+    public BiddingSpell(final int id, final String triggerBid,
+            final int triggerSlot, final String blockBidType) {
         super(id, triggerBid, triggerSlot, 4);
         this.blockBidType = BidType.valueOf(blockBidType);
     }
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection) {
+    public boolean cast(final Player player, final ConnectionWrapper connection) {
         final int round = player.getRoundOfSpell(this);
         player.curseBid(blockBidType, round);
         return false;

@@ -21,13 +21,12 @@ public class BuffSpell extends Spell {
     }
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection) {
+    public boolean cast(final Player player, final ConnectionWrapper connection) {
         player.getDungeon().getAllAdventurers().forEach(adv -> {
             adv.setHealBuff(healBuff);
             adv.setHealthBuff(healthBuff);
             adv.setDefuseBuff(defuseBuff);
         });
-        player.curse();
         return false;
     }
 }

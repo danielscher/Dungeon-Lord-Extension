@@ -131,7 +131,8 @@ public class TunnelGraph {
         return result;
     }
 
-    public Optional<Tunnel> getClosestTunnelWithRoom(Tunnel battleGroundTunnel) { // battleground
+    public Optional<Tunnel> getClosestTunnelWithRoom(
+            final Tunnel battleGroundTunnel) { // battleground
 
         // if bg tile has a room returns it immediately.
         if (battleGroundTunnel.isRoom()) {

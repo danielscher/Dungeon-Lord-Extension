@@ -150,7 +150,7 @@ public final class BuildingState extends State {
             final Bid bid = Bid.createBid(bidType, player, bidList.size() + 1);
             bidList.add(bid);
             // lookup if this bid triggers a spell and add it to player.
-            List<Spell> spells = model.getTriggeredSpell(bidType, bidList.size());
+            final List<Spell> spells = model.getTriggeredSpell(bidType, bidList.size());
             if (!spells.isEmpty()) {
                 player.addSpell(spells, model.getRound());
             }
@@ -294,7 +294,7 @@ public final class BuildingState extends State {
      *
      * @param players all present players in game.
      */
-    private void resetRoomSpell(List<Player> players) {
+    private void resetRoomSpell(final List<Player> players) {
         players.forEach(Player::clearRoomCurse);
     }
 }

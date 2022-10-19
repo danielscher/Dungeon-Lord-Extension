@@ -185,11 +185,12 @@ public class Dungeon {
     }
 
     public Optional<Room> destroyRoom() {
-        Optional<Tunnel> tunnelWithClosestRoom = getGraph().getClosestTunnelWithRoom(battleGround);
+        final Optional<Tunnel> tunnelWithClosestRoom = getGraph().getClosestTunnelWithRoom(
+                battleGround);
         if (tunnelWithClosestRoom.isEmpty()) {
             return Optional.empty();
         }
-        Optional<Room> room = tunnelWithClosestRoom.get().getRoom();
+        final Optional<Room> room = tunnelWithClosestRoom.get().getRoom();
         tunnelWithClosestRoom.ifPresent(Tunnel::destroyRoom);
         return room;
     }

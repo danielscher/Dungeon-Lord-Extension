@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class SpellCommand extends PlayerCommand {
 
-    public SpellCommand(int playerId) {
+    public SpellCommand(final int playerId) {
         super(playerId);
     }
 
@@ -23,7 +23,7 @@ public class SpellCommand extends PlayerCommand {
     }
 
     @Override
-    protected ActionResult run(Model model, ConnectionWrapper connection) {
+    protected ActionResult run(final Model model, final ConnectionWrapper connection) {
         final Player player = model.getPlayerById(getId());
 
         // if player tries to counter during choosing a battleground fail.

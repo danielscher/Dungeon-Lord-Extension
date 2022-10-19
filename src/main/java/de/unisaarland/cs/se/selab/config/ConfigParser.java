@@ -49,15 +49,17 @@ public class ConfigParser {
         final int food = json.optInt(ModelBuilderInterface.CFG_SPELL_FOOD);
         final int gold = json.optInt(ModelBuilderInterface.CFG_SPELL_GOLD);
         final String bidTypeBlocked = json.optString(
-                ModelBuilderInterface.CFG_SPELL_BID_TYPE_BLOCKED);
+                ModelBuilderInterface.CFG_SPELL_BLOCKED);
         final String structureEffect = json.optString(
-                ModelBuilderInterface.CFG_SPELL_STRUCTURE_EFFECT);
-        final int healthBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_HEALTH_POINTS);
-        final int healBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_HEAL_VALUE);
-        final int defuseBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_DEFUSE_VALUE);
+                ModelBuilderInterface.CFG_SPELL_STRUCT);
+        final int healthBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_HP);
+        final int healBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_HEAL);
+        final int defuseBuff = json.optInt(ModelBuilderInterface.CFG_SPELL_DEFUSE);
 
-        builder.addSpell(id, spellType, bidType, slot, food, gold, bidTypeBlocked, structureEffect,
+        final SpellAttrContainer container = new SpellAttrContainer(id, spellType, bidType, slot,
+                food, gold, bidTypeBlocked, structureEffect,
                 healthBuff, healBuff, defuseBuff);
+        builder.addSpell(container);
     }
 
     private static <M> void parseMonster(final JSONObject json,

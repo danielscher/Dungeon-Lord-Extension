@@ -92,9 +92,18 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
     }
 
     @Override
-    public void addSpell(int id, String spellType, String bidType, int slot, int food, int gold,
-            String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
-            int defuseBuff) {
+    public void addSpell(final SpellAttrContainer container) {
+        final int id = container.id();
+        final String spellType = container.spellType();
+        final String bidType = container.bidType();
+        final int slot = container.slot();
+        final String bidTypeBlocked = container.bidTypeBlocked();
+        final int food = container.food();
+        final int gold = container.gold();
+        final String structureEffect = container.structureEffect();
+        final int healthBuff = container.healthBuff();
+        final int healBuff = container.healBuff();
+        final int defuseBuff = container.defuseBuff();
         Spell spell = null;
         switch (spellType) {
             case "BUFF" ->

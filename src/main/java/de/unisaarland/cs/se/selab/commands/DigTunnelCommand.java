@@ -11,8 +11,8 @@ import de.unisaarland.cs.se.selab.model.dungeon.TunnelGraph;
 import de.unisaarland.cs.se.selab.state.BuildingState;
 import de.unisaarland.cs.se.selab.state.State;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 
 /**
  * The player digs a tunnel.
@@ -147,8 +147,8 @@ public class DigTunnelCommand extends PlayerCommand {
      * @param random        random object.
      * @return if a counter spell is found or not
      */
-    private boolean checkIfCounterSpellFound(Coordinate coords, final int dungeonLength,
-            Random random) {
+    private boolean checkIfCounterSpellFound(final Coordinate coords, final int dungeonLength,
+            final RandomGenerator random) {
 
         final int xCoordinate = coords.posX();
         final int yCoordinate = coords.posY();

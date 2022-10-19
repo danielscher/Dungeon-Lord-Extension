@@ -129,7 +129,7 @@ public class Tunnel {
     public void destroyRoom() {
 
         if (getMonsters().size() > 1) {
-            Monster monster = getMonsters().get(0);
+            final Monster monster = getMonsters().get(0);
             monster.setUsed(false);
             getMonsters().remove(monster);
         }
