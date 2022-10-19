@@ -41,7 +41,7 @@ public class PlaceBidCommand extends Command {
 
         }
 
-        if (player.isLocked(this.type)) {
+        if (player.isLocked(this.type) || player.isCursed(this.type,model.getRound())) {
             connection.sendActionFailed(getId(), "This bid is locked for you.");
             return ActionResult.RETRY;
         }
