@@ -25,6 +25,55 @@ public class BuildRoomCommand extends PlayerCommand {
         this.roomId = roomId;
     }
 
+    /**
+     * Checks whether a room may be placed at a given coordinate or not.
+     *
+     * @param room       the room to be placed
+     * @param coordinate the coordinate where the room shall be placed
+     * @param graph      the graph the room shall be added to
+     * @param sideLength the graph's side length
+     * @return {@code true} if the room may be placed at the coordinate or {@code false} otherwise
+     */
+    public static boolean isValidBuildLocation(final Room room, final Coordinate coordinate,
+            final TunnelGraph graph, final int sideLength) {
+        // A room cannot have an adjacent room.
+        for (final Tunnel tunnel : graph.getNeighbours(coordinate)) {
+            if (tunnel.isRoom()) {
+                return false;
+            }
+        }
+        // A room can only replace an unconquered tunnel.
+        final Optional<Tunnel> tunnel = graph.getTunnel(coordinate);
+        if (tunnel.isEmpty()
+                || tunnel.get().isRoom()
+                || tunnel.get().isConquered()) {
+            return false;
+        }
+        return BuildRoomCommand.checkRoomRestriction(room, coordinate, sideLength);
+    }
+
+    /**
+     * Checks whether a given coordinate fulfills a room's placement restrictions.
+     *
+     * @param room       the room to be placed
+     * @param coordinate the coordinate where the room shall be placed
+     * @param sideLength the graph's side length
+     * @return {@code true} if the coordinate fulfills the placement restriction or {@code false}
+     * otherwise
+     */
+    public static boolean checkRoomRestriction(final Room room, final Coordinate coordinate,
+            final int sideLength) {
+        final int middle = (sideLength / 2) - 1;
+        return switch (room.getRestriction()) {
+            case UPPER_HALF -> coordinate.posY() <= middle;
+            case LOWER_HALF -> coordinate.posY() > middle;
+            case OUTER_RING -> (coordinate.posX() == 0 || coordinate.posX() == sideLength - 1)
+                    || (coordinate.posY() == 0 || coordinate.posY() == sideLength - 1);
+            case INNER_RING -> (coordinate.posX() != 0 && coordinate.posX() != sideLength - 1)
+                    && (coordinate.posY() != 0 && coordinate.posY() != sideLength - 1);
+        };
+    }
+
     @Override
     public Set<State.Phase> inPhase() {
         return Set.of(State.Phase.PLACING_ROOM);
@@ -52,55 +101,6 @@ public class BuildRoomCommand extends PlayerCommand {
         graph.getTunnel(this.coordinate).ifPresent(tunnel -> tunnel.buildRoom(room));
         connection.sendRoomBuilt(getId(), this.roomId, this.coordinate);
         return ActionResult.PROCEED;
-    }
-
-    /**
-     * Checks whether a room may be placed at a given coordinate or not.
-     *
-     * @param room       the room to be placed
-     * @param coordinate the coordinate where the room shall be placed
-     * @param graph      the graph the room shall be added to
-     * @param sideLength the graph's side length
-     * @return {@code true} if the room may be placed at the coordinate or {@code false} otherwise
-     */
-    public static boolean isValidBuildLocation(final Room room, final Coordinate coordinate,
-                                               final TunnelGraph graph, final int sideLength) {
-        // A room cannot have an adjacent room.
-        for (final Tunnel tunnel : graph.getNeighbours(coordinate)) {
-            if (tunnel.isRoom()) {
-                return false;
-            }
-        }
-        // A room can only replace an unconquered tunnel.
-        final Optional<Tunnel> tunnel = graph.getTunnel(coordinate);
-        if (tunnel.isEmpty()
-                || tunnel.get().isRoom()
-                || tunnel.get().isConquered()) {
-            return false;
-        }
-        return BuildRoomCommand.checkRoomRestriction(room, coordinate, sideLength);
-    }
-
-    /**
-     * Checks whether a given coordinate fulfills a room's placement restrictions.
-     *
-     * @param room       the room to be placed
-     * @param coordinate the coordinate where the room shall be placed
-     * @param sideLength the graph's side length
-     * @return {@code true} if the coordinate fulfills the placement restriction or {@code false}
-     *         otherwise
-     */
-    public static boolean checkRoomRestriction(final Room room, final Coordinate coordinate,
-                                               final int sideLength) {
-        final int middle = (sideLength / 2) - 1;
-        return switch (room.getRestriction()) {
-            case UPPER_HALF -> coordinate.posY() <= middle;
-            case LOWER_HALF -> coordinate.posY() > middle;
-            case OUTER_RING -> (coordinate.posX() == 0 || coordinate.posX() == sideLength - 1)
-                    || (coordinate.posY() == 0 || coordinate.posY() == sideLength - 1);
-            case INNER_RING -> (coordinate.posX() != 0 && coordinate.posX() != sideLength - 1)
-                    && (coordinate.posY() != 0 && coordinate.posY() != sideLength - 1);
-        };
     }
 
 }

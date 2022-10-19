@@ -1,7 +1,10 @@
 package de.unisaarland.cs.se.selab.config;
 
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.AttackStrategy;
 import de.unisaarland.cs.se.selab.model.Model;
+import de.unisaarland.cs.se.selab.model.spells.SpellType;
+import de.unisaarland.cs.se.selab.model.spells.SpellType.STRUCTUREEFFECT;
 import de.unisaarland.cs.se.selab.state.BuildingState;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,8 +13,8 @@ import java.util.Set;
  * The model validator checks all constraints before inserting elements into the model builder.
  * <p>
  * The model validator combines the builder pattern with delegation to automatically validate the
- * config before creating the model.
- * It does so by delegating all function calls to another builder similar to a decorator pattern.
+ * config before creating the model. It does so by delegating all function calls to another builder
+ * similar to a decorator pattern.
  * </p>
  *
  * @param <M> the model class to be built
@@ -23,6 +26,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     private final Set<Integer> adventurerIds;
     private final Set<Integer> trapIds;
     private final Set<Integer> roomIds;
+    private final Set<Integer> spellIds;
 
     private final Set<String> setProperties;
     private int years;
@@ -35,6 +39,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         this.trapIds = new HashSet<>();
         this.roomIds = new HashSet<>();
         this.setProperties = new HashSet<>();
+        this.spellIds = new HashSet<>();
     }
 
     /////////////////////////////////////////////
@@ -52,7 +57,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
     }
 
     private void checkBounds(final String attrName, final int lowerBound, final int upperBound,
-                             final int value) {
+            final int value) {
         if (value < lowerBound || value > upperBound) {
             throw new IllegalArgumentException(
                     String.format("%s is required to be between %d and %d.", attrName, lowerBound,
@@ -82,6 +87,19 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         }
     }
 
+    private void checkAttrIsNull(final String attr) {
+        if (!"".equals(attr)) {
+            throw new IllegalArgumentException(String.format("%s isn't legal in this spell", attr));
+        }
+    }
+
+    private void checkAttrIsNull(final String attrName, final int attr) {
+        if (attr != 0) {
+            throw new IllegalArgumentException(
+                    String.format("%s=%d is not legal in this spell", attrName, attr));
+        }
+    }
+
     /////////////////////////////////////////////
     //            BUILDER FUNCTIONS            //
     /////////////////////////////////////////////
@@ -89,7 +107,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
 
     @Override
     public void addMonster(final int id, final int hunger, final int damage, final int evilness,
-                           final String attack) {
+            final String attack) {
         checkUniqueId("Monster", this.monsterIds, id);
         checkPositiveZero("Monster " + ModelBuilderInterface.CFG_ID, id);
         checkPositiveZero("Monster " + ModelBuilderInterface.CFG_MONSTER_HUNGER, hunger);
@@ -101,17 +119,21 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
 
     @Override
     public void addAdventurer(final int id, final int difficulty, final int healthPoints,
-                              final int healValue,
-                              final int defuseValue, final boolean charge) {
+            final int magicPoints,
+            final int healValue,
+            final int defuseValue, final boolean charge) {
         checkUniqueId("Adventurer", this.adventurerIds, id);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ID, id);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DIFFICULTY, difficulty);
         checkPositiveNonZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEALTH_POINTS,
-                             healthPoints);
+                healthPoints);
+        checkPositiveNonZero("Adventurer" + ModelBuilderInterface.CFG_ADV_MAGIC_POINTS,
+                magicPoints);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_HEAL_VALUE, healValue);
         checkPositiveZero("Adventurer " + ModelBuilderInterface.CFG_ADV_DEFUSE_VALUE, defuseValue);
         this.adventurerIds.add(id);
-        this.builder.addAdventurer(id, difficulty, healthPoints, healValue, defuseValue, charge);
+        this.builder.addAdventurer(id, difficulty, healthPoints, magicPoints, healValue,
+                defuseValue, charge);
     }
 
     @Override
@@ -143,8 +165,8 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
 
     @Override
     public void addRoom(final int id, final int activation, final String restriction,
-                        final int food, final int gold,
-                        final int imps, final int niceness) {
+            final int food, final int gold,
+            final int imps, final int niceness) {
         checkUniqueId("Room", this.roomIds, id);
         checkPositiveZero("Room " + ModelBuilderInterface.CFG_ID, id);
         checkPositiveNonZero("Room " + ModelBuilderInterface.CFG_ROOM_ACTIVATION, activation);
@@ -154,6 +176,84 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
         checkPositiveZero("Room " + ModelBuilderInterface.CFG_ROOM_NICENESS, niceness);
         this.roomIds.add(id);
         this.builder.addRoom(id, activation, restriction, food, gold, imps, niceness);
+    }
+
+    @Override
+    public void addSpell(final SpellAttrContainer container) {
+        final int id = container.id();
+        final String spellType = container.spellType();
+        final String bidType = container.bidType();
+        final int slot = container.slot();
+        final String bidTypeBlocked = container.bidTypeBlocked();
+        final int food = container.food();
+        final int gold = container.gold();
+        final String structureEffect = container.structureEffect();
+        final int healthBuff = container.healthBuff();
+        final int healBuff = container.healBuff();
+        final int defuseBuff = container.defuseBuff();
+        checkUniqueId("Spell", this.spellIds, id);
+        BidType.valueOf(bidType);
+        checkPositiveZero("Spell" + ModelBuilderInterface.CFG_ID, id);
+        checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_SLOT, slot);
+        // check if spell type is legal
+        // and if only the needed attributes are present.
+        switch (SpellType.valueOf(spellType)) {
+            case RESOURCE -> {
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_FOOD, food);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_GOLD, gold);
+                checkAttrIsNull(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkAttrIsNull("healthBuff", healthBuff);
+                checkAttrIsNull("healBuff", healBuff);
+                checkAttrIsNull("defuseBuff", defuseBuff);
+            }
+            case BUFF -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                checkAttrIsNull(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HP,
+                        healthBuff);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_HEAL,
+                        healBuff);
+                checkPositiveNonZero("Spell" + ModelBuilderInterface.CFG_SPELL_DEFUSE,
+                        defuseBuff);
+            }
+            case ROOM -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                checkAttrIsNull(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkAttrIsNull("healthBuff", healthBuff);
+                checkAttrIsNull("healBuff", healBuff);
+                checkAttrIsNull("defuseBuff", defuseBuff);
+            }
+            case BIDDING -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                BidType.valueOf(bidTypeBlocked);
+                checkAttrIsNull(structureEffect);
+                checkPositiveNonZero("healthBuff", healthBuff);
+                checkPositiveNonZero("healBuff", healBuff);
+                checkPositiveNonZero("defuseBuff", defuseBuff);
+            }
+            case STRUCTURE -> {
+                checkAttrIsNull("food", food);
+                checkAttrIsNull("gold", gold);
+                checkAttrIsNull(bidTypeBlocked);
+                STRUCTUREEFFECT.valueOf(structureEffect);
+                checkPositiveNonZero("healthBuff", healthBuff);
+                checkPositiveNonZero("healBuff", healBuff);
+                checkPositiveNonZero("defuseBuff", defuseBuff);
+            }
+            default -> throw new IllegalArgumentException(
+                    String.format("%s is an illegal spell type", spellType));
+        }
+
+        this.spellIds.add(id);
+        this.builder.addSpell(container);
+
+
     }
 
 
@@ -227,13 +327,12 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 ModelBuilderInterface.CFG_INITIAL_EVILNESS
         );
         checkLength("Adventurers", this.adventurerIds,
-                    this.years * (Model.MAX_ROUNDS - 1) * this.maxPlayers);
+                this.years * (Model.MAX_ROUNDS - 1) * this.maxPlayers);
         final int rounds = this.years * Model.MAX_ROUNDS;
         checkLength("Rooms", this.roomIds, rounds * BuildingState.ROOMS_PER_ROUND);
         checkLength("Traps", this.trapIds, rounds * 4);
         checkLength("Monsters", this.monsterIds,
-                    rounds * BuildingState.MONSTERS_PER_ROUND);
+                rounds * BuildingState.MONSTERS_PER_ROUND);
         return this.builder.build();
     }
-
 }

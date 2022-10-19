@@ -6,6 +6,8 @@ package de.unisaarland.cs.se.selab.model;
 public class Adventurer {
 
     private final int id;
+
+    private final int magicPoints;
     private final int difficulty;
     private final int healValue;
     private final int defuseValue;
@@ -14,11 +16,18 @@ public class Adventurer {
     private int currentHealthPoints;
     private boolean defeated;
 
+    private int healthBuff;
+
+    private int healBuff;
+    private int defuseBuff;
+
     public Adventurer(final int id, final int difficulty, final int healthPoints,
-                      final int healValue, final int defuseValue, final boolean charge) {
+            final int magicPoints, final int healValue, final int defuseValue,
+            final boolean charge) {
         this.id = id;
         this.difficulty = difficulty;
         this.maxHealthPoints = healthPoints;
+        this.magicPoints = magicPoints;
         this.currentHealthPoints = this.maxHealthPoints;
         this.healValue = healValue;
         this.defuseValue = defuseValue;
@@ -35,11 +44,11 @@ public class Adventurer {
     }
 
     public int getHealValue() {
-        return healValue;
+        return (healValue + healBuff);
     }
 
     public int getDefuseValue() {
-        return defuseValue;
+        return (defuseValue + defuseBuff);
     }
 
     /**
@@ -68,7 +77,17 @@ public class Adventurer {
      * @return the actual amount of health points the player was damaged (after bounds-check)
      */
     public int damage(final int amount) {
-        final int effectiveDamage = Math.min(this.currentHealthPoints, amount);
+        //first damage the buffed hp.
+        int damage = amount;
+        if (amount >= healthBuff) {
+            damage -= healBuff;
+            healthBuff = 0;
+        } else {
+            healthBuff -= damage;
+        }
+
+        //damage un-buffed hp.
+        final int effectiveDamage = Math.min(currentHealthPoints, damage);
         this.currentHealthPoints -= effectiveDamage;
         if (this.currentHealthPoints <= 0) {
             this.defeated = true;
@@ -82,5 +101,45 @@ public class Adventurer {
 
     public boolean isCharging() {
         return this.charge;
+    }
+
+    public int getMagicPoints() {
+        return magicPoints;
+    }
+
+    public void debuff() {
+        //reset health buff if surpassed maxHealth
+        if (currentHealthPoints + healthBuff > maxHealthPoints) {
+            this.healthBuff = 0;
+            currentHealthPoints = maxHealthPoints;
+        }
+        healthBuff = 0;
+        defuseBuff = 0;
+    }
+
+    public void setHealthBuff(final int healthBuff) {
+        this.healthBuff = healthBuff;
+    }
+
+    /**
+     * set a buff value if the corresponding property is larger than 0.
+     *
+     * @param healBuff the amount of buff
+     */
+    public void setHealBuff(final int healBuff) {
+        if (healValue > 0) {
+            this.healBuff = healBuff;
+        }
+    }
+
+    /**
+     * set a buff value if the corresponding property is larger than 0.
+     *
+     * @param defuseBuff the amount of buff
+     */
+    public void setDefuseBuff(final int defuseBuff) {
+        if (defuseValue > 0) {
+            this.defuseBuff = defuseBuff;
+        }
     }
 }

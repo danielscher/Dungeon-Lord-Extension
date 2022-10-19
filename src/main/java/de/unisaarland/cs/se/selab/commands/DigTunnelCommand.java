@@ -12,6 +12,7 @@ import de.unisaarland.cs.se.selab.state.BuildingState;
 import de.unisaarland.cs.se.selab.state.State;
 import java.util.List;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 
 /**
  * The player digs a tunnel.
@@ -25,6 +26,66 @@ public class DigTunnelCommand extends PlayerCommand {
     public DigTunnelCommand(final int playerId, final int x, final int y) {
         super(playerId);
         this.coordinate = new Coordinate(x, y);
+    }
+
+    /**
+     * Check whether the given coordinate is connected to a tunnel graph.
+     *
+     * @param coordinate the coordinate to check
+     * @param graph      the graph where the coordinate shall be added
+     * @return whether the coordinate is connected to the graph
+     */
+    public static boolean isConnected(final Coordinate coordinate, final TunnelGraph graph) {
+        final List<Tunnel> neighbours = graph.getNeighbours(coordinate);
+        return !neighbours.isEmpty();
+    }
+
+    /**
+     * Checks whether the given coordinate violates any tunnel digging restrictions.
+     * <p>
+     * This function checks for the following restrictions: - the coordinate must be in bounds - the
+     * coordinate must not form any 2-by-2s - the coordinate must not already be a tunnel
+     * </p>
+     *
+     * @param coordinate the coordinate to check
+     * @param graph      the graph where the coordinate shall be added
+     * @param sideLength the graph's side length
+     * @return whether the coordinate violates any building restrictions
+     */
+    public static boolean violatesTunnelBuildingRestrictions(final Coordinate coordinate,
+            final TunnelGraph graph, final int sideLength) {
+        // Check out of bounds
+        if (coordinate.posX() > sideLength - 1
+                || coordinate.posY() > sideLength - 1
+                || coordinate.posX() < 0
+                || coordinate.posY() < 0) {
+            return true;
+        }
+
+        // Check 2-by-2s
+        // The vectors are movement directions applied successively to the coordinate,
+        // e.g., the first vector checks the following coordinates the following (starting at 'X'):
+        //    1 --> 2
+        //    ^     |
+        //    |     v
+        //    X     3
+        final Direction[] nwVector = {Direction.NORTH, Direction.WEST, Direction.SOUTH};
+        final Direction[] neVector = {Direction.NORTH, Direction.EAST, Direction.SOUTH};
+        final Direction[] swVector = {Direction.SOUTH, Direction.WEST, Direction.NORTH};
+        final Direction[] seVector = {Direction.SOUTH, Direction.EAST, Direction.NORTH};
+
+        // Check if all neighbours in these direction are present, if yes then we have a two by two
+        for (final Direction[] vector : List.of(nwVector, neVector, swVector, seVector)) {
+            if (graph.getTunnel(coordinate.getNeighbor(vector[0]))
+                    .flatMap(t1 -> graph.getTunnel(t1.getCoordinate().getNeighbor(vector[1])))
+                    .flatMap(t2 -> graph.getTunnel(t2.getCoordinate().getNeighbor(vector[2])))
+                    .isPresent()) {
+                return true;
+            }
+        }
+
+        // Check if already a tunnel
+        return graph.getTunnel(coordinate).isPresent();
     }
 
     @Override
@@ -67,6 +128,12 @@ public class DigTunnelCommand extends PlayerCommand {
         player.digTunnel();
         graph.addTunnel(new Tunnel(this.coordinate, true));
         connection.sendTunnelDug(getId(), this.coordinate);
+        // check if a counter spell was found.
+        if (checkIfCounterSpellFound(this.coordinate, model.getDungeonSideLength(),
+                model.getRandom())) {
+            player.addCounterSpell();
+            connection.sendCounterSpellFound(player.getId());
+        }
         if (player.getNumTunnelDigsAllowed() <= 0) {
             return ActionResult.PROCEED;
         } else {
@@ -75,64 +142,20 @@ public class DigTunnelCommand extends PlayerCommand {
     }
 
     /**
-     * Check whether the given coordinate is connected to a tunnel graph.
-     *
-     * @param coordinate the coordinate to check
-     * @param graph      the graph where the coordinate shall be added
-     * @return whether the coordinate is connected to the graph
+     * @param coords        coords of the tunnel dug.
+     * @param dungeonLength max length of dungeon
+     * @param random        random object.
+     * @return if a counter spell is found or not
      */
-    public static boolean isConnected(final Coordinate coordinate, final TunnelGraph graph) {
-        final List<Tunnel> neighbours = graph.getNeighbours(coordinate);
-        return !neighbours.isEmpty();
-    }
+    private boolean checkIfCounterSpellFound(final Coordinate coords, final int dungeonLength,
+            final RandomGenerator random) {
 
-    /**
-     * Checks whether the given coordinate violates any tunnel digging restrictions.
-     * <p>
-     * This function checks for the following restrictions:
-     *  - the coordinate must be in bounds
-     *  - the coordinate must not form any 2-by-2s
-     *  - the coordinate must not already be a tunnel
-     * </p>
-     *
-     * @param coordinate the coordinate to check
-     * @param graph      the graph where the coordinate shall be added
-     * @param sideLength the graph's side length
-     * @return whether the coordinate violates any building restrictions
-     */
-    public static boolean violatesTunnelBuildingRestrictions(final Coordinate coordinate,
-            final TunnelGraph graph, final int sideLength) {
-        // Check out of bounds
-        if (coordinate.posX() > sideLength - 1
-                || coordinate.posY() > sideLength - 1
-                || coordinate.posX() < 0
-                || coordinate.posY() < 0) {
-            return true;
-        }
+        final int xCoordinate = coords.posX();
+        final int yCoordinate = coords.posY();
+        final double result = xCoordinate * yCoordinate;
+        final double dieBound = Math.pow(dungeonLength, 2);
+        final double dieCast = random.nextDouble(dieBound + 1);
 
-        // Check 2-by-2s
-        // The vectors are movement directions applied successively to the coordinate,
-        // e.g., the first vector checks the following coordinates the following (starting at 'X'):
-        //    1 --> 2
-        //    ^     |
-        //    |     v
-        //    X     3
-        final Direction[] nwVector = { Direction.NORTH, Direction.WEST, Direction.SOUTH };
-        final Direction[] neVector = { Direction.NORTH, Direction.EAST, Direction.SOUTH };
-        final Direction[] swVector = { Direction.SOUTH, Direction.WEST, Direction.NORTH };
-        final Direction[] seVector = { Direction.SOUTH, Direction.EAST, Direction.NORTH };
-
-        // Check if all neighbours in these direction are present, if yes then we have a two by two
-        for (final Direction[] vector : List.of(nwVector, neVector, swVector, seVector)) {
-            if (graph.getTunnel(coordinate.getNeighbor(vector[0]))
-                    .flatMap(t1 -> graph.getTunnel(t1.getCoordinate().getNeighbor(vector[1])))
-                    .flatMap(t2 -> graph.getTunnel(t2.getCoordinate().getNeighbor(vector[2])))
-                    .isPresent()) {
-                return true;
-            }
-        }
-
-        // Check if already a tunnel
-        return graph.getTunnel(coordinate).isPresent();
+        return result > dieCast;
     }
 }

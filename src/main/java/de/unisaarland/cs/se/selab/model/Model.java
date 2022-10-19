@@ -1,7 +1,9 @@
 package de.unisaarland.cs.se.selab.model;
 
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.dungeon.Dungeon;
 import de.unisaarland.cs.se.selab.model.dungeon.Room;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,10 +30,12 @@ public class Model {
     private final List<Adventurer> adventurers;
     private final List<Trap> traps;
     private final List<Room> rooms;
+    private final List<Spell> spells;
     private final Set<Integer> activeIds;
     private final Random random;
     private final List<Monster> availableMonsters;
     private final List<Room> availableRooms;
+    private final List<Spell> availableSpells;
     private final List<Adventurer> queueingAdventurers;
     private final int maxPlayers;
     private final int maxYear;
@@ -46,25 +50,27 @@ public class Model {
     private int startingPlayer;
 
     public Model(final Collection<Monster> monsters,
-                 final Collection<Adventurer> adventurers,
-                 final Collection<Trap> traps,
-                 final Collection<Room> rooms,
-                 final long randomSeed,
-                 final int maxPlayers,
-                 final int maxYear,
-                 final int dungeonSideLength,
-                 final int initialFood,
-                 final int initialGold,
-                 final int initialImps,
-                 final int initialEvilness) {
+            final Collection<Adventurer> adventurers,
+            final Collection<Trap> traps,
+            final Collection<Room> rooms,
+            final Collection<Spell> spells, final long randomSeed,
+            final int maxPlayers,
+            final int maxYear,
+            final int dungeonSideLength,
+            final int initialFood,
+            final int initialGold,
+            final int initialImps,
+            final int initialEvilness) {
         this.monsters = new ArrayList<>(monsters);
         this.adventurers = new ArrayList<>(adventurers);
         this.traps = new ArrayList<>(traps);
         this.rooms = new ArrayList<>(rooms);
+        this.spells = new ArrayList<>(spells);
         this.players = new HashMap<>();
         this.activeIds = new HashSet<>();
         this.availableMonsters = new ArrayList<>();
         this.availableRooms = new ArrayList<>();
+        this.availableSpells = new ArrayList<>();
         this.queueingAdventurers = new ArrayList<>();
         this.random = new Random(randomSeed);
         this.maxPlayers = maxPlayers;
@@ -118,6 +124,10 @@ public class Model {
      */
     public final boolean hasNextYear() {
         return this.year++ < this.maxYear;
+    }
+
+    public int getMaxYear() {
+        return maxYear;
     }
 
     /**
@@ -215,6 +225,23 @@ public class Model {
     }
 
     /**
+     * search for a spell that is triggered by bid and slot retrive and delete it from available
+     * spells.
+     *
+     * @param bid  Category that triggers the spell
+     * @param slot slot number that triggers the spell
+     * @return a list of spells that answer the condition.
+     */
+    public final List<Spell> getTriggeredSpell(final BidType bid, final int slot) {
+        final List<Spell> spells = this.availableSpells.stream()
+                .filter(spell -> spell.getTriggerBid() == bid)
+                .filter(spell -> spell.getTriggerSlot() == slot).toList();
+        spells.forEach(availableSpells::remove);
+        return spells;
+
+    }
+
+    /**
      * Check whether the player with the given ID is in the game.
      *
      * @param playerId the player's player ID
@@ -300,6 +327,17 @@ public class Model {
     }
 
     /**
+     * Draw a spell from the stack and add it to the available spells for this round.
+     *
+     * @return the drawn spell
+     */
+    public final Spell drawSpell() {
+        final Spell spell = this.spells.get(0);
+        this.availableSpells.add(spell);
+        return spell;
+    }
+
+    /**
      * Check whether there are any rooms left for construction this round.
      *
      * @return whether there are any rooms left for construction
@@ -325,6 +363,7 @@ public class Model {
     public final void removeAvailableRoom(final Room room) {
         this.availableRooms.remove(room);
     }
+
 
     /**
      * Get the next most difficult adventurer available this round.
@@ -353,6 +392,7 @@ public class Model {
     public void seasonalCleanup() {
         this.availableRooms.clear();
         this.availableMonsters.clear();
+        this.availableSpells.clear();
         this.queueingAdventurers.clear();
     }
 
@@ -364,5 +404,10 @@ public class Model {
         Collections.shuffle(this.adventurers, this.random);
         Collections.shuffle(this.traps, this.random);
         Collections.shuffle(this.rooms, this.random);
+        Collections.shuffle(this.spells, this.random);
+    }
+
+    public Random getRandom() {
+        return this.random;
     }
 }

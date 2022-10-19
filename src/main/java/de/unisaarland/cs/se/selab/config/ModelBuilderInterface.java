@@ -29,6 +29,7 @@ public interface ModelBuilderInterface<M> {
     String CFG_ADVENTURERS = "adventurers";
     String CFG_ADV_DIFFICULTY = "difficulty";
     String CFG_ADV_HEALTH_POINTS = "healthPoints";
+    String CFG_ADV_MAGIC_POINTS = "magicPoints";
     String CFG_ADV_HEAL_VALUE = "healValue";
     String CFG_ADV_DEFUSE_VALUE = "defuseValue";
     String CFG_ADV_CHARGE = "charge";
@@ -48,20 +49,35 @@ public interface ModelBuilderInterface<M> {
     String CFG_ROOM_IMPS = "imps";
     String CFG_ROOM_NICENESS = "niceness";
 
+    // spells
+    String CFG_SPELLS = "spells";
+    String CFG_SPELL_TYPE = "spellType";
+    String CFG_SPELL_BID_TYPE = "bidType";
+    String CFG_SPELL_SLOT = "slot";
+    String CFG_SPELL_FOOD = "food";
+    String CFG_SPELL_GOLD = "gold";
+    String CFG_SPELL_BLOCKED = "bidTypeBlocked";
+    String CFG_SPELL_STRUCT = "structureEffect";
+    String CFG_SPELL_HP = "healthPoints";
+    String CFG_SPELL_HEAL = "healValue";
+    String CFG_SPELL_DEFUSE = "defuseValue";
+
 
     void addMonster(int id, int hunger, int damage, int evilness,
-                    String attack);
+            String attack);
 
-    void addAdventurer(int id, int difficulty, int healthPoints,
-                       int healValue, int defuseValue, boolean charge);
+    void addAdventurer(int id, int difficulty, int healthPoints, int magicPoints,
+            int healValue, int defuseValue, boolean charge);
 
     void addTrap(int id, String attack, int damage);
 
     void addTrap(int id, String attack, int damage, int target);
 
     void addRoom(int id, int activation, String restriction, int food, int gold, int imps,
-                 int niceness);
-    
+            int niceness);
+
+    void addSpell(SpellAttrContainer container);
+
 
     void setMaxPlayers(int maxPlayers);
 
@@ -85,5 +101,4 @@ public interface ModelBuilderInterface<M> {
      * @return the instantiated model
      */
     M build();
-
 }

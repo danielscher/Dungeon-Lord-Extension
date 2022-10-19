@@ -15,6 +15,7 @@ public class Tunnel {
     private static final int MONSTER_LIMIT = 1;
 
     private final Coordinate coordinate;
+    private final List<Monster> monsters;
     private boolean goldMiningImp;
     private boolean tunnelMiningImp;
     private boolean conquered;
@@ -22,14 +23,13 @@ public class Tunnel {
     private Room room;
     @Nullable
     private Trap trap;
-    private final List<Monster> monsters;
 
     public Tunnel(final Coordinate coordinate, final boolean isBeingMined) {
         this.monsters = new ArrayList<>();
         this.tunnelMiningImp = isBeingMined;
         this.coordinate = coordinate;
     }
-    
+
     public Coordinate getCoordinate() {
         return this.coordinate;
     }
@@ -121,6 +121,19 @@ public class Tunnel {
 
     public Optional<Room> getRoom() {
         return Optional.ofNullable(this.room);
+    }
+
+    /**
+     * deletes the room from the tunnel and returns the decommissions the first monster
+     */
+    public void destroyRoom() {
+
+        if (getMonsters().size() > 1) {
+            final Monster monster = getMonsters().get(0);
+            monster.setUsed(false);
+            getMonsters().remove(monster);
+        }
+        this.room = null;
     }
 
     public boolean isConquered() {

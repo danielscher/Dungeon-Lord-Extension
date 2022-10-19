@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The connection wrapper provides easy access to the server connection and manages the
- * registered players.
+ * The connection wrapper provides easy access to the server connection and manages the registered
+ * players.
  */
 public class ConnectionWrapper {
 
@@ -117,11 +117,15 @@ public class ConnectionWrapper {
         this.connection.sendSetBattleGround(commId(playerId));
     }
 
+    public void sendCounterSpell(final int playerId) {
+        LOGGER.debug("Player {} can counter a spell", playerId);
+        this.connection.sendCounterSpell(commId(playerId));
+    }
+
     public void sendActNow(final int playerId) {
         LOGGER.debug("Player {} must act", playerId);
         this.connection.sendActNow(commId(playerId));
     }
-
 
     /////////////////////////////////////////////
     //            BROADCAST EVENTS             //
@@ -355,6 +359,76 @@ public class ConnectionWrapper {
         LOGGER.debug("(Broadcast) Bidding has started");
         for (final int commId : getCommIds()) {
             this.connection.sendBiddingStarted(commId);
+        }
+    }
+
+    public void sendSpellDrawn(final int spell) {
+        LOGGER.debug("(Broadcast) spell {} was drawn", spell);
+        for (final int commId : getCommIds()) {
+            this.connection.sendSpellDrawn(commId, spell);
+        }
+    }
+
+    public void sendCounterSpellFound(final int playerId) {
+        LOGGER.debug("(Broadcast) player {} found a counter spell", playerId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendCounterSpellFound(commId, playerId);
+        }
+    }
+
+    public void sendSpellUnlocked(final int spellId, final int playerId) {
+        LOGGER.debug("(Broadcast) player {} unlocked the spell {}", playerId, spellId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendSpellUnlocked(commId, spellId, playerId);
+        }
+    }
+
+    public void sendSpellCast(final int spellId, final int playerId) {
+        LOGGER.debug("(Broadcast) spell {} was cast on player {}", spellId, playerId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendSpellCast(commId, spellId, playerId);
+        }
+    }
+
+    public void sendCounterSpellCast(final int playerId) {
+        LOGGER.debug("(Broadcast) player {} countered a spell", playerId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendCounterSpellCast(commId, playerId);
+        }
+    }
+
+    public void sendRoomsBlocked(final int playerId, final int round) {
+        LOGGER.debug("(Broadcast) player {}'s rooms are blocked for round {}", playerId, round);
+        for (final int commId : getCommIds()) {
+            this.connection.sendRoomsBlocked(commId, playerId, round);
+        }
+    }
+
+    public void sendBidTypeBlocked(final int playerId, final BidType bid, final int round) {
+        LOGGER.debug("(Broadcast) player {} cannot bid on {} in round {}", playerId, bid, round);
+        for (final int commId : getCommIds()) {
+            this.connection.sendBidTypeBlocked(commId, playerId, bid, round);
+        }
+    }
+
+    public void sendRoomRemoved(final int playerId, final int roomId) {
+        LOGGER.debug("(Broadcast) player {}'s room {} was removed", playerId, roomId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendRoomRemoved(commId, playerId, roomId);
+        }
+    }
+
+    public void sendArchMageArrived(final int playerId) {
+        LOGGER.debug("(Broadcast) Linus arrived at the dungeon of player {}", playerId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendArchmageArrived(commId, playerId);
+        }
+    }
+
+    public void sendMonsterRemoved(final int playerId, final int monsterId) {
+        LOGGER.debug("(Broadcast) player {}'s monster {} was removed", playerId, monsterId);
+        for (final int commId : getCommIds()) {
+            this.connection.sendMonsterRemoved(commId, playerId, monsterId);
         }
     }
 

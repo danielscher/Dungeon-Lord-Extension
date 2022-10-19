@@ -11,11 +11,13 @@ import de.unisaarland.cs.se.selab.model.Player;
 import de.unisaarland.cs.se.selab.model.dungeon.Coordinate;
 import de.unisaarland.cs.se.selab.model.dungeon.Dungeon;
 import de.unisaarland.cs.se.selab.model.dungeon.Tunnel;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Function;
 
 /**
@@ -25,6 +27,9 @@ public final class CombatState extends State {
 
     private static final int EVILNESS_WHEN_CONQUERED = -1;
     private static final int FATIGUE_DAMAGE = 2;
+    private static final int REDUCED_FATIGUE_DAMAGE = 1;
+    private boolean linusPresent;
+    private boolean earlyConquer;
 
     public CombatState(final Model model, final ConnectionWrapper connection) {
         super(model, connection);
@@ -64,9 +69,14 @@ public final class CombatState extends State {
                         return ActionResult.END_GAME;
                     }
                 }
+                resetBuffs(player);
             }
         }
         return ActionResult.PROCEED;
+    }
+
+    private void resetBuffs(final Player player) {
+        player.getDungeon().getAllAdventurers().forEach(Adventurer::debuff);
     }
 
     private void prisonerFlees(final Player player) {
@@ -101,9 +111,16 @@ public final class CombatState extends State {
         if (!player.isAlive()) {
             return defendResult;
         }
-        damageAdventurers(player);
+        final ActionResult castSpellsResult = castSpells(player, model.getRound());
+        if (!player.isAlive()) {
+            return castSpellsResult;
+        }
+        if (!earlyConquer) {
+            damageAdventurers(player);
+            adventurersConquer(player);
+            priestsHeal(player.getDungeon().getAllAdventurers());
+        }
         adventurersConquer(player);
-        priestsHeal(player.getDungeon().getAllAdventurers());
         return ActionResult.PROCEED;
     }
 
@@ -156,12 +173,13 @@ public final class CombatState extends State {
         }
         // Deal fatigue damage
         for (final Adventurer adventurer : dungeon.getAllAdventurers()) {
-            hurtAdventurer(adventurer, player, CombatState.FATIGUE_DAMAGE);
+            hurtAdventurer(adventurer, player,
+                    linusPresent ? CombatState.REDUCED_FATIGUE_DAMAGE : CombatState.FATIGUE_DAMAGE);
         }
     }
 
     private void evaluateDefense(final DefensiveMeasure defense, final Player player,
-                                 final int totalReduction) {
+            final int totalReduction) {
         final Dungeon dungeon = player.getDungeon();
         switch (defense.getAttackStrategy()) {
             case BASIC -> {
@@ -193,12 +211,21 @@ public final class CombatState extends State {
     }
 
     private void hurtAdventurer(final Adventurer adventurer, final Player player,
-                                final int damage) {
+            final int damage) {
         final int effectiveDamage = adventurer.damage(damage);
         if (effectiveDamage > 0) {
             if (adventurer.isDefeated()) {
-                player.getDungeon().imprisonAdventurer(adventurer);
-                connection.sendAdventurerImprisoned(adventurer.getId());
+                // i
+                if (player.getDungeon().imprisonAdventurer(adventurer)) {
+                    connection.sendAdventurerImprisoned(adventurer.getId());
+                    linusPresent = checkIfLinusAppears(player, model.getRandom(),
+                            model.getMaxYear(),
+                            model.getYear()
+                    );
+                    if (model.getRound() == 4) {
+                        linusPresent = false;
+                    }
+                }
             } else {
                 connection.sendAdventurerDamaged(adventurer.getId(), effectiveDamage);
             }
@@ -235,6 +262,9 @@ public final class CombatState extends State {
         titles.add(Player::getImps);                                           // Imps
         titles.add(player -> player.getGold() + player.getFood());             // Riches
         titles.add(player -> player.getDungeon().getNumUnconqueredTiles());    // Battle
+        titles.add(Player::getTimesCursed);                                    // Magic Proof
+        titles.add(Player::getTimesLinusTriggered);                            // Penguin Visit
+        titles.add(Player::gettimesCountered);                                 // Counter Strike
 
         // Evaluate all titles.
         for (final Function<Player, Integer> title : titles) {
@@ -256,7 +286,7 @@ public final class CombatState extends State {
     }
 
     private void processTitle(final Collection<Player> players,
-                              final Function<Player, Integer> title) {
+            final Function<Player, Integer> title) {
         final Optional<Player> optWinner = players.stream()
                 .max(Comparator.comparing(title));
         if (optWinner.isPresent()) {
@@ -273,4 +303,68 @@ public final class CombatState extends State {
             }
         }
     }
+
+    /**
+     * @param player the player on which the spells will be cast
+     * @param round  current round of combat
+     * @return END_GAME if last player left or PROCEED in normal situation.
+     */
+    private ActionResult castSpells(final Player player, final int round) {
+        final int advMagicPoints = player.getDungeon().getAdventurerMagicPoints();
+        final int totalMagicPoints = linusPresent ? advMagicPoints + 3 : advMagicPoints;
+        boolean earlyConquerFlag = false;
+        // cast all spells in FIFO.
+        for (final Spell spell : player.getSpellsForRound(round)) {
+            // skip spell if adventurers don't have enough magic points.
+            if (spell.getCost() > totalMagicPoints) {
+                continue;
+            }
+            connection.sendSpellCast(spell.getId(), player.getId());
+            // increment times player withstood spells.
+            player.curse();
+            // check if a player can counter.
+            if (player.getNumCounterSpells() > 0) {
+                // handle player action.
+                connection.sendCounterSpell(player.getId());
+                final ActionResult counterSpellResult = ConnectionUtils.executePlayerCommand(model,
+                        connection, Phase.COMBAT, player);
+                // if last player left game will end.
+                if (counterSpellResult == ActionResult.END_GAME) {
+                    return ActionResult.END_GAME;
+                }
+                // checks if player has actually countered a spell.
+                // if he didn't we cast spell.
+                if (!player.hasCountered()) {
+                    earlyConquerFlag = spell.cast(player, connection);
+                }
+                player.resetCounterFlag();
+            }
+            // if spell was a structure spell that conquers we set the flag.
+            if (earlyConquerFlag) {
+                earlyConquer = true;
+            }
+        }
+        return ActionResult.PROCEED;
+    }
+
+    private boolean checkIfLinusAppears(final Player player, final Random random, final int maxYear,
+            final int currYear) {
+
+        final int result = player.getEvilness() + currYear;
+        final int dieBound = Player.MAX_EVILNESS + maxYear;
+        final int dieCast = random.nextInt(dieBound + 1);
+
+        if (result > dieCast) {
+            player.triggerLinus();
+            connection.sendArchMageArrived(player.getId());
+            final int monsterAmount = player.getNumMonsters();
+            if (monsterAmount > 0) {
+                final Monster removedMonster = player.removeMonster(random.nextInt(monsterAmount));
+                connection.sendMonsterRemoved(player.getId(), removedMonster.getId());
+            }
+            return true;
+        }
+        return false;
+    }
 }
+

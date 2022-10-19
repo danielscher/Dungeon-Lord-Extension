@@ -7,6 +7,12 @@ import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Monster;
 import de.unisaarland.cs.se.selab.model.Trap;
 import de.unisaarland.cs.se.selab.model.dungeon.Room;
+import de.unisaarland.cs.se.selab.model.spells.BiddingSpell;
+import de.unisaarland.cs.se.selab.model.spells.BuffSpell;
+import de.unisaarland.cs.se.selab.model.spells.ResourceSpell;
+import de.unisaarland.cs.se.selab.model.spells.RoomSpell;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
+import de.unisaarland.cs.se.selab.model.spells.StructureSpell;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -21,6 +27,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
     private final List<Monster> monsters;
     private final List<Trap> traps;
     private final List<Room> rooms;
+    private final List<Spell> spells;
     private int maxPlayers;
     private long randomSeed;
     private int years;
@@ -35,20 +42,23 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
         this.monsters = new ArrayList<>();
         this.traps = new ArrayList<>();
         this.rooms = new ArrayList<>();
+        this.spells = new ArrayList<>();
     }
 
     @Override
     public void addMonster(final int id, final int hunger, final int damage, final int evilness,
-                           final String attack) {
+            final String attack) {
         this.monsters.add(
                 new Monster(id, hunger, damage, evilness, AttackStrategy.valueOf(attack)));
     }
 
     @Override
     public void addAdventurer(final int id, final int difficulty, final int healthPoints,
-                              final int healValue, final int defuseValue, final boolean charge) {
+            final int magicPoints,
+            final int healValue, final int defuseValue, final boolean charge) {
         this.adventurers.add(
-                new Adventurer(id, difficulty, healthPoints, healValue, defuseValue, charge));
+                new Adventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue,
+                        charge));
     }
 
     @Override
@@ -63,7 +73,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
 
     @Override
     public void addRoom(final int id, final int activation, final String restriction,
-                        final int food, final int gold, final int imps, final int niceness) {
+            final int food, final int gold, final int imps, final int niceness) {
         final EnumMap<BidType, Integer> production = new EnumMap<>(BidType.class);
         if (food > 0) {
             production.put(BidType.FOOD, food);
@@ -80,6 +90,34 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
         this.rooms.add(new Room(id, activation, Room.BuildingRestriction.valueOf(restriction),
                 production));
     }
+
+    @Override
+    public void addSpell(final SpellAttrContainer container) {
+        final int id = container.id();
+        final String spellType = container.spellType();
+        final String bidType = container.bidType();
+        final int slot = container.slot();
+        final String bidTypeBlocked = container.bidTypeBlocked();
+        final int food = container.food();
+        final int gold = container.gold();
+        final String structureEffect = container.structureEffect();
+        final int healthBuff = container.healthBuff();
+        final int healBuff = container.healBuff();
+        final int defuseBuff = container.defuseBuff();
+        Spell spell = null;
+        switch (spellType) {
+            case "BUFF" ->
+                    spell = new BuffSpell(id, bidType, slot, healthBuff, healBuff, defuseBuff);
+            case "RESOURCE" -> spell = new ResourceSpell(id, bidType, slot, food, gold);
+            case "BIDDING" -> spell = new BiddingSpell(id, bidType, slot, bidTypeBlocked);
+            case "ROOM" -> spell = new RoomSpell(id, bidType, slot);
+            case "STRUCTURE" -> spell = new StructureSpell(id, bidType, slot, structureEffect);
+            default -> throw new IllegalArgumentException(
+                    String.format("%s is not allowed", spellType));
+        }
+        this.spells.add(spell);
+    }
+
 
     @Override
     public void setMaxPlayers(final int maxPlayers) {
@@ -128,7 +166,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
                 this.adventurers,
                 this.traps,
                 this.rooms,
-                this.randomSeed,
+                spells, this.randomSeed,
                 this.maxPlayers,
                 this.years,
                 this.dungeonSideLength,

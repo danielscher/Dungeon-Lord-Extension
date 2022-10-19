@@ -11,6 +11,7 @@ import de.unisaarland.cs.se.selab.model.dungeon.Tunnel;
  * A player sets a monster with a targeted attack for defense.
  */
 public class MonsterTargetedCommand extends PlaceMonsterCommand {
+
     private final int position;
 
     public MonsterTargetedCommand(final int playerId, final int monsterId, final int position) {
@@ -21,7 +22,7 @@ public class MonsterTargetedCommand extends PlaceMonsterCommand {
 
     @Override
     protected ActionResult placeMonster(final Monster monster, final Dungeon dungeon,
-                                   final Tunnel battleGround, final ConnectionWrapper connection) {
+            final Tunnel battleGround, final ConnectionWrapper connection) {
         if (monster.getAttackStrategy() != (AttackStrategy.TARGETED)) {
             connection.sendActionFailed(getId(), "This monster needs no target to fight.");
             return ActionResult.RETRY;

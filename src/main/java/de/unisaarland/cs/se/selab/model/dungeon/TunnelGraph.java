@@ -84,15 +84,13 @@ public class TunnelGraph {
     /**
      * Check whether the given tunnel matches the conditions for being the next battleground.
      * <p>
-     * The conditions are:
-     *   1. the tunnel is unconquered
-     *   2. there is no other tunnel with a shorter distance to the entrance (0, 0)
-     *   
+     * The conditions are: 1. the tunnel is unconquered 2. there is no other tunnel with a shorter
+     * distance to the entrance (0, 0)
+     * <p>
      * This function performs an optimized BFS through the graph that exploits the fact that in each
      * step, the worklist ({@code depthLevel}) contains all nodes with the same distance from the
-     * origin.
-     * That means, we can exit the loop as soon as we find one unconquered tile and then only need
-     * to check whether the given tile is contained in the worklist.
+     * origin. That means, we can exit the loop as soon as we find one unconquered tile and then
+     * only need to check whether the given tile is contained in the worklist.
      * </p>
      *
      * @param tunnel the tunnel to check
@@ -104,14 +102,14 @@ public class TunnelGraph {
                 || this.stream().allMatch(Tunnel::isConquered)) {
             return false;
         }
-        
+
         final Set<Tunnel> visited = new HashSet<>();
         Set<Tunnel> depthLevel = new HashSet<>(List.of(this.entryPoints));
         while (!depthLevel.isEmpty()) {
             visited.addAll(depthLevel);
-            final Set<Tunnel> unconqueredTunnels = 
+            final Set<Tunnel> unconqueredTunnels =
                     depthLevel.stream().filter(t -> !t.isConquered()).collect(Collectors.toSet());
-            
+
             if (!unconqueredTunnels.isEmpty()) {
                 return unconqueredTunnels.contains(tunnel);
             }
@@ -131,6 +129,40 @@ public class TunnelGraph {
             result.add(function.apply(tunnel));
         }
         return result;
+    }
+
+    public Optional<Tunnel> getClosestTunnelWithRoom(
+            final Tunnel battleGroundTunnel) { // battleground
+
+        // if bg tile has a room returns it immediately.
+        if (battleGroundTunnel.isRoom()) {
+            return Optional.of(battleGroundTunnel);
+        }
+
+        final Set<Tunnel> visited = new HashSet<>();
+        Set<Tunnel> depthLevel = new HashSet<>(List.of(battleGroundTunnel));
+        while (!depthLevel.isEmpty()) {
+            visited.addAll(depthLevel);
+            final Set<Tunnel> tunnelsWithRoom =
+                    depthLevel.stream().filter(Tunnel::isRoom).collect(Collectors.toSet());
+
+            // if rooms are found returns the room with the lowest id.
+            if (!tunnelsWithRoom.isEmpty()) {
+                if (tunnelsWithRoom.size() == 1) {
+                    return tunnelsWithRoom.stream().findAny();
+                }
+                return tunnelsWithRoom.stream().filter(t -> t.getRoom().isPresent())
+                        .min(Comparator.comparingInt(t -> t.getRoom().get().getId()));
+            }
+
+            // Next level contains all unvisited neighbors of the current level
+            depthLevel = depthLevel.stream()
+                    .flatMap(node -> getNeighbours(node.getCoordinate()).stream())
+                    .filter(node -> !visited.contains(node))
+                    .collect(Collectors.toSet());
+        }
+        return Optional.empty();
+
     }
 
 }

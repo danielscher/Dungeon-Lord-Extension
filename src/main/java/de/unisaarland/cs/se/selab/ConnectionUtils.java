@@ -14,15 +14,15 @@ import de.unisaarland.cs.se.selab.state.State;
 public final class ConnectionUtils {
 
     // This is a utility class that should not be instantiated.
-    private ConnectionUtils() {}
+    private ConnectionUtils() {
+    }
 
     /**
      * Helper function to handle incoming commands until a sufficient command was executed.
      * <p>
-     * This function relies on the {@link ActionResult}
-     * returned by the commands.
-     * It repeatedly polls and executes the next action until the result confirms that we should
-     * continue or a timeout exception is encountered.
+     * This function relies on the {@link ActionResult} returned by the commands. It repeatedly
+     * polls and executes the next action until the result confirms that we should continue or a
+     * timeout exception is encountered.
      * </p>
      *
      * @param model      the model to which the action based changes should apply
@@ -31,9 +31,9 @@ public final class ConnectionUtils {
      * @return a result that indicates how the game should continue
      */
     public static ActionResult executePlayerCommand(final Model model,
-                                                    final ConnectionWrapper connection,
-                                                    final State.Phase phase,
-                                                    final Player player) {
+            final ConnectionWrapper connection,
+            final State.Phase phase,
+            final Player player) {
         try {
             connection.sendActNow(player.getId());
             Command command = connection.nextAction();
@@ -63,7 +63,7 @@ public final class ConnectionUtils {
      * @param connection the connection to the client to transmit events
      */
     public static void changeFood(final Player player, final int amount,
-                                  final ConnectionWrapper connection) {
+            final ConnectionWrapper connection) {
         if (player.getFood() + amount >= 0) {
             player.changeFood(amount);
             connection.sendFoodChanged(player.getId(), amount);
@@ -78,7 +78,7 @@ public final class ConnectionUtils {
      * @param connection the connection to the client to transmit events
      */
     public static void changeGold(final Player player, final int amount,
-                                  final ConnectionWrapper connection) {
+            final ConnectionWrapper connection) {
         if (player.getGold() + amount >= 0) {
             player.changeGold(amount);
             connection.sendGoldChanged(player.getId(), amount);
@@ -93,7 +93,7 @@ public final class ConnectionUtils {
      * @param connection the connection to the client to transmit events
      */
     public static void changeEvilness(final Player player, final int amount,
-                                      final ConnectionWrapper connection) {
+            final ConnectionWrapper connection) {
         final int evilness = player.getEvilness() + amount;
         if (evilness >= Player.MIN_EVILNESS && evilness <= Player.MAX_EVILNESS) {
             player.changeEvilness(amount);
@@ -109,7 +109,7 @@ public final class ConnectionUtils {
      * @param connection the connection to the client to transmit events
      */
     public static void changeImps(final Player player, final int amount,
-                                  final ConnectionWrapper connection) {
+            final ConnectionWrapper connection) {
         if (amount >= 0) {
             player.changeImps(amount);
             connection.sendImpsChanged(player.getId(), amount);

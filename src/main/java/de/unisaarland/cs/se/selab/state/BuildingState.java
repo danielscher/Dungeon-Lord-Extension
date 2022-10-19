@@ -13,6 +13,7 @@ import de.unisaarland.cs.se.selab.model.Monster;
 import de.unisaarland.cs.se.selab.model.Player;
 import de.unisaarland.cs.se.selab.model.dungeon.Room;
 import de.unisaarland.cs.se.selab.model.dungeon.Tunnel;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import de.unisaarland.cs.se.selab.state.bids.Bid;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,7 @@ public final class BuildingState extends State {
 
     public static final int ROOMS_PER_ROUND = 2;
     public static final int MONSTERS_PER_ROUND = 3;
+    public static final int SPELLS_PER_ROUND = 3;
     public static final int NO_SUPERVISION_LIMIT = 3;
 
     public BuildingState(final Model model, final ConnectionWrapper connection) {
@@ -46,6 +48,7 @@ public final class BuildingState extends State {
             player.unlockBidTypes();
             player.wakeUpMonsters();
             player.getDungeon().clearAdventurers();
+            player.removeSpells();
         }
 
         while (model.hasNextRound()) {
@@ -53,6 +56,7 @@ public final class BuildingState extends State {
                 return new EndGameState(this.model, this.connection);
             }
         }
+        resetRoomSpell(model.getPlayers());
         return new CombatState(this.model, this.connection);
     }
 
@@ -60,7 +64,7 @@ public final class BuildingState extends State {
      * Contains the logic for handling one season.
      *
      * @return {@code true} if the game should continue or {@code false} if all players left and the
-     *         game should exit
+     * game should exit
      */
     private boolean handleSeason() {
         connection.sendNextRound(model.getRound());
@@ -79,7 +83,7 @@ public final class BuildingState extends State {
         if (!evaluateBids(biddingSquare)) {
             return false;
         }
-
+        // also reset room curse.
         lockAndUnlockBids(model.getPlayers());
         returnMiningImps(model.getPlayers());
         returnRoomImps(model.getPlayers());
@@ -96,7 +100,7 @@ public final class BuildingState extends State {
      * Collect all player bids.
      *
      * @return {@code true} if the game should continue or {@code false} if all players left and the
-     *         game should exit
+     * game should exit
      */
     private boolean playersBid() {
         final List<Player> players = model.getPlayers();
@@ -140,11 +144,16 @@ public final class BuildingState extends State {
      * @param biddingSquare the bidding square
      */
     private void addBid(final BidType bidType, final Player player, final Map<BidType,
-                List<Bid>> biddingSquare) {
+            List<Bid>> biddingSquare) {
         final List<Bid> bidList = biddingSquare.getOrDefault(bidType, new ArrayList<>());
         if (bidList.size() < 3) {
             final Bid bid = Bid.createBid(bidType, player, bidList.size() + 1);
             bidList.add(bid);
+            // lookup if this bid triggers a spell and add it to player.
+            final List<Spell> spells = model.getTriggeredSpell(bidType, bidList.size());
+            if (!spells.isEmpty()) {
+                player.addSpell(spells, model.getRound());
+            }
             biddingSquare.put(bidType, bidList);
         }
     }
@@ -168,7 +177,7 @@ public final class BuildingState extends State {
      * Evaluate all bids.
      *
      * @return {@code true} if the game should continue or {@code false} if all players left and the
-     *         game should exit
+     * game should exit
      */
     public boolean evaluateBids(final Map<BidType, List<Bid>> biddingSquare) {
         for (final BidType type : BidType.values()) {
@@ -186,6 +195,8 @@ public final class BuildingState extends State {
 
     private void lockAndUnlockBids(final Iterable<Player> players) {
         for (final Player player : players) {
+            // end bid cursed effect after placing bids for this round.
+            player.resetBiddingSpell(model.getRound());
             // Unlock previously locked BidTypes.
             for (final BidType type : player.getLockedTypes()) {
                 connection.sendBidRetrieved(player.getId(), type);
@@ -260,6 +271,11 @@ public final class BuildingState extends State {
             final Room room = model.drawRoom();
             connection.sendRoomDrawn(room.getId());
         }
+
+        for (int i = 0; i < SPELLS_PER_ROUND; i++) {
+            final Spell spell = model.drawSpell();
+            connection.sendSpellDrawn(spell.getId());
+        }
     }
 
     private void spreadAdventurersToPlayers() {
@@ -270,5 +286,15 @@ public final class BuildingState extends State {
                     player.getDungeon().addAdventurer(adventurer);
                     connection.sendAdventurerArrived(player.getId(), adventurer.getId());
                 });
+    }
+
+    /**
+     * helper method to clear all rounds for which the rooms are blocked should be called at the end
+     * of building year.
+     *
+     * @param players all present players in game.
+     */
+    private void resetRoomSpell(final List<Player> players) {
+        players.forEach(Player::clearRoomCurse);
     }
 }

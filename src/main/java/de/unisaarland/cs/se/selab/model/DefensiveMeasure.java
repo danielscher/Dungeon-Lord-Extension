@@ -11,7 +11,7 @@ public abstract class DefensiveMeasure {
     private int target;
 
     protected DefensiveMeasure(final int id, final int damage,
-                               final AttackStrategy attackStrategy) {
+            final AttackStrategy attackStrategy) {
         this.id = id;
         this.damage = damage;
         this.attackStrategy = attackStrategy;

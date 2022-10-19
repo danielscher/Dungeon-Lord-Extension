@@ -2,9 +2,14 @@ package de.unisaarland.cs.se.selab.model;
 
 import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.dungeon.Dungeon;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * This holds all player-related data.
@@ -21,6 +26,7 @@ public class Player {
     private final Dungeon dungeon;
     private final List<Optional<BidType>> bids;
     private final List<BidType> lockedTypes;
+
     private int evilness;
     private int imps;
     private int gold;
@@ -28,6 +34,16 @@ public class Player {
     private int numTunnelDigsAllowed;
     private boolean alive;
     private int scorePoints;
+
+    private int numCounterSpells;
+
+    private int timesCountered;
+    private int timesCursed;
+    private int timesTriggeredLinus;
+    private final Map<Integer, List<Spell>> spells = new HashMap<>();
+    private final Set<Integer> roomsCursedInRounds = new HashSet<>();
+    private final List<List<BidType>> cursedBids = new ArrayList<>();
+    private boolean spellCountered;
 
     public Player(final int id,
             final String name,
@@ -65,7 +81,7 @@ public class Player {
      * @param type     the bid's type
      * @param priority the bid's priority, i.e., whether it is the first, second, or third bid
      * @return {@code true} if the bid could be placed or {@code false} if the bid or priority is
-     *         not available
+     * not available
      */
     public final boolean placeBid(final BidType type, final int priority) {
         // Bid priorities start at 1 but list indices start at 0, hence the -1
@@ -152,6 +168,10 @@ public class Player {
         return this.lockedTypes.contains(type);
     }
 
+    public boolean isCursed(final BidType bid, final int round) {
+        return this.cursedBids.get(round - 1).contains(bid);
+    }
+
     /**
      * Get a list of currently locked bid types.
      *
@@ -203,6 +223,10 @@ public class Player {
                 .findFirst();
     }
 
+    public int getNumMonsters() {
+        return monsters.size();
+    }
+
     /**
      * Make all monsters available for being set on defense again.
      */
@@ -229,21 +253,21 @@ public class Player {
     }
 
     /**
-     * Set the number of tunnels the player is allowed to dig.
-     *
-     * @param numTunnelDigsAllowed the number of tunnels a player may dig
-     */
-    public final void setNumTunnelDigsAllowed(final int numTunnelDigsAllowed) {
-        this.numTunnelDigsAllowed = numTunnelDigsAllowed;
-    }
-
-    /**
      * Get the number of tunnels the player is allowed to dig.
      *
      * @return the number of tunnels a player may dig
      */
     public final int getNumTunnelDigsAllowed() {
         return this.numTunnelDigsAllowed;
+    }
+
+    /**
+     * Set the number of tunnels the player is allowed to dig.
+     *
+     * @param numTunnelDigsAllowed the number of tunnels a player may dig
+     */
+    public final void setNumTunnelDigsAllowed(final int numTunnelDigsAllowed) {
+        this.numTunnelDigsAllowed = numTunnelDigsAllowed;
     }
 
     /**
@@ -281,4 +305,89 @@ public class Player {
         this.scorePoints += amount;
     }
 
+    public void curseBid(final BidType bid, final int round) {
+        cursedBids.get(round - 1).add(bid);
+    }
+
+    public void resetBiddingSpell(final int round) {
+        cursedBids.remove(round - 1);
+    }
+
+    public List<Spell> getSpellsForRound(final int round) {
+        return spells.get(round - 1);
+    }
+
+    public int getRoundOfSpell(final Spell spell) {
+        return spells.entrySet().stream().filter(entry -> entry.getValue().contains(spell))
+                .findFirst().get().getKey();
+    }
+
+    public int getNumCounterSpells() {
+        return numCounterSpells;
+    }
+
+    public void useCounterSpell() {
+        this.numCounterSpells -= 1;
+        this.timesCountered += 1;
+        this.spellCountered = true;
+    }
+
+    public void addCounterSpell() {
+        this.numCounterSpells += 1;
+    }
+
+    public void addSpell(final List<Spell> triggeredSpells, final int round) {
+        spells.put(round - 1, triggeredSpells);
+    }
+
+    public boolean hasCountered() {
+        return this.spellCountered;
+    }
+
+    public void resetCounterFlag() {
+        this.spellCountered = false;
+    }
+
+    /**
+     * increments timeCursedCounter by 1.
+     */
+    public void curse() {
+        timesCursed++;
+    }
+
+    public void curseRooms(final int round) {
+        if (roomsCursedInRounds.contains(round)) {
+            return;
+        }
+        roomsCursedInRounds.add(round);
+    }
+
+    public void clearRoomCurse() {
+        roomsCursedInRounds.clear();
+    }
+
+    public void triggerLinus() {
+        this.timesTriggeredLinus++;
+    }
+
+
+    public Monster removeMonster(final int index) {
+        return this.monsters.remove(index);
+    }
+
+    public void removeSpells() {
+        this.spells.clear();
+    }
+
+    public Integer getTimesCursed() {
+        return timesCursed;
+    }
+
+    public Integer getTimesLinusTriggered() {
+        return timesTriggeredLinus;
+    }
+
+    public Integer gettimesCountered() {
+        return timesCountered;
+    }
 }

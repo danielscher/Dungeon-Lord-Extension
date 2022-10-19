@@ -11,7 +11,7 @@ public class Monster extends DefensiveMeasure {
 
 
     public Monster(final int id, final int hunger, final int damage, final int evilness,
-                   final AttackStrategy attackStrategy) {
+            final AttackStrategy attackStrategy) {
         super(id, damage, attackStrategy);
         this.hunger = hunger;
         this.evilness = evilness;
@@ -26,11 +26,11 @@ public class Monster extends DefensiveMeasure {
         return this.evilness;
     }
 
-    public void setUsed(final boolean used) {
-        this.used = used;
-    }
-
     public boolean isUsed() {
         return this.used;
+    }
+
+    public void setUsed(final boolean used) {
+        this.used = used;
     }
 }

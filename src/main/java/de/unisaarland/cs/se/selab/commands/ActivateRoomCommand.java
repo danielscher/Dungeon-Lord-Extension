@@ -64,6 +64,8 @@ public class ActivateRoomCommand extends Command {
             return ActionResult.RETRY;
         }
 
+        //TODO: add cursed room check
+
         player.changeImps(-activation);
         connection.sendImpsChanged(getId(), -activation);
         room.activate();

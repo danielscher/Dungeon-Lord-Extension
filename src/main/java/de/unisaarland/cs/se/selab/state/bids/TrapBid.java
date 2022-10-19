@@ -16,6 +16,15 @@ public final class TrapBid extends Bid {
         super(player, slot);
     }
 
+    private static void drawTrap(final Player player, final int amount, final Model model,
+            final ConnectionWrapper connection) {
+        for (int i = 0; i < amount; i++) {
+            final Trap trap = model.drawTrap();
+            player.addTrap(trap);
+            connection.sendTrapAcquired(player.getId(), trap.getId());
+        }
+    }
+
     @Override
     protected ActionResult bidEvalImpl(final Model model, final ConnectionWrapper connection) {
         switch (this.slot) {
@@ -37,14 +46,5 @@ public final class TrapBid extends Bid {
             }
         }
         return ActionResult.PROCEED;
-    }
-
-    private static void drawTrap(final Player player, final int amount, final Model model,
-                                final ConnectionWrapper connection) {
-        for (int i = 0; i < amount; i++) {
-            final Trap trap = model.drawTrap();
-            player.addTrap(trap);
-            connection.sendTrapAcquired(player.getId(), trap.getId());
-        }
     }
 }

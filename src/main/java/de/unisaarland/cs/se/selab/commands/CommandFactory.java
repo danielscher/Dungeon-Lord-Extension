@@ -9,12 +9,12 @@ public class CommandFactory implements ActionFactory<Command> {
 
     private final Map<Integer, Integer> commToPlayer;
 
-    private Optional<Integer> playerId(final int commID) {
-        return Optional.ofNullable(this.commToPlayer.get(commID));
-    }
-
     public CommandFactory(final Map<Integer, Integer> idMap) {
         this.commToPlayer = idMap;
+    }
+
+    private Optional<Integer> playerId(final int commID) {
+        return Optional.ofNullable(this.commToPlayer.get(commID));
     }
 
     @Override
@@ -121,7 +121,10 @@ public class CommandFactory implements ActionFactory<Command> {
     }
 
     @Override
-    public Command createCastCounterSpell(final int i) {
-        throw new UnsupportedOperationException("Implement me!");
+    public Command createCastCounterSpell(final int commId) {
+        final Optional<Integer> playerId = playerId(commId);
+        return playerId.isPresent()
+                ? new SpellCommand(playerId.get())
+                : new EmptyCommand();
     }
 }
