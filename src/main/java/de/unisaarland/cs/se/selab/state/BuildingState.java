@@ -48,6 +48,7 @@ public final class BuildingState extends State {
             player.unlockBidTypes();
             player.wakeUpMonsters();
             player.getDungeon().clearAdventurers();
+            player.removeSpells();
         }
 
         while (model.hasNextRound()) {
