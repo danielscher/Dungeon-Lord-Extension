@@ -55,6 +55,7 @@ public final class BuildingState extends State {
                 return new EndGameState(this.model, this.connection);
             }
         }
+        resetRoomSpell(model.getPlayers());
         return new CombatState(this.model, this.connection);
     }
 
@@ -81,7 +82,7 @@ public final class BuildingState extends State {
         if (!evaluateBids(biddingSquare)) {
             return false;
         }
-
+        // also reset room curse.
         lockAndUnlockBids(model.getPlayers());
         returnMiningImps(model.getPlayers());
         returnRoomImps(model.getPlayers());
@@ -193,6 +194,8 @@ public final class BuildingState extends State {
 
     private void lockAndUnlockBids(final Iterable<Player> players) {
         for (final Player player : players) {
+            // end bid cursed effect after placing bids for this round.
+            player.resetBiddingSpell(model.getRound());
             // Unlock previously locked BidTypes.
             for (final BidType type : player.getLockedTypes()) {
                 connection.sendBidRetrieved(player.getId(), type);
@@ -282,5 +285,14 @@ public final class BuildingState extends State {
                     player.getDungeon().addAdventurer(adventurer);
                     connection.sendAdventurerArrived(player.getId(), adventurer.getId());
                 });
+    }
+
+    /**
+     * helper method to clear all rounds for which the rooms are blocked
+     * should be called at the end of building year.
+     * @param players all present players in game.
+     */
+    private void resetRoomSpell(List<Player> players){
+        players.forEach(Player::clearRoomCurse);
     }
 }
