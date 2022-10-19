@@ -29,7 +29,7 @@ public class Tunnel {
         this.tunnelMiningImp = isBeingMined;
         this.coordinate = coordinate;
     }
-    
+
     public Coordinate getCoordinate() {
         return this.coordinate;
     }
@@ -122,8 +122,17 @@ public class Tunnel {
     public Optional<Room> getRoom() {
         return Optional.ofNullable(this.room);
     }
-    /**deletes the room from the tunnel*/
-    public void destroyRoom(){
+
+    /**
+     * deletes the room from the tunnel and returns the decommissions the first monster
+     */
+    public void destroyRoom() {
+
+        if (getMonsters().size() > 1) {
+            Monster monster = getMonsters().get(0);
+            monster.setUsed(false);
+            getMonsters().remove(monster);
+        }
         this.room = null;
     }
 
