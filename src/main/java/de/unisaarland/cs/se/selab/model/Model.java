@@ -126,6 +126,10 @@ public class Model {
         return this.year++ < this.maxYear;
     }
 
+    public int getMaxYear() {
+        return maxYear;
+    }
+
     /**
      * Get the number of the current year.
      *
@@ -222,14 +226,19 @@ public class Model {
 
     /**
      * search for a spell that is triggered by bid and slot
+     * retrive and delete it from available spells.
      *
      * @param bid  Category that triggers the spell
      * @param slot slot number that triggers the spell
      * @return a list of spells that answer the condition.
      */
     public final List<Spell> getTriggeredSpell(BidType bid, int slot) {
-        return this.availableSpells.stream().filter(spell -> spell.getTriggerBid() == bid)
+        List<Spell> spells = this.availableSpells.stream()
+                .filter(spell -> spell.getTriggerBid() == bid)
                 .filter(spell -> spell.getTriggerSlot() == slot).toList();
+        spells.forEach(availableSpells::remove);
+        return spells;
+
     }
 
     /**
@@ -355,9 +364,6 @@ public class Model {
         this.availableRooms.remove(room);
     }
 
-    public final void removeAvailableSpell(final Spell spell) {
-        this.availableSpells.remove(spell);
-    }
 
     /**
      * Get the next most difficult adventurer available this round.
@@ -400,7 +406,8 @@ public class Model {
         Collections.shuffle(this.rooms, this.random);
         Collections.shuffle(this.spells, this.random);
     }
-    public Random getRandom(){
+
+    public Random getRandom() {
         return this.random;
     }
 }
