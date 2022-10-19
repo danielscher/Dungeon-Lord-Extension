@@ -109,6 +109,7 @@ public class Adventurer {
         //reset health buff if surpassed maxHealth
         if (currentHealthPoints + healthBuff > maxHealthPoints) {
             this.healthBuff = 0;
+            currentHealthPoints = maxHealthPoints;
         }
         healthBuff = 0;
         defuseBuff = 0;
