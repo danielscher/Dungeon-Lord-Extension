@@ -10,7 +10,7 @@ public class Trap extends DefensiveMeasure {
     }
 
     public Trap(final int id, final AttackStrategy attackStrategy, final int damage,
-                final int target) {
+            final int target) {
         super(id, damage, attackStrategy);
         setTarget(target);
     }

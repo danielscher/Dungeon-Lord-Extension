@@ -8,7 +8,7 @@ public enum SpellType {
     ROOM,
     STRUCTURE;
 
-    public enum STRUCTURE_EFFECT {
+    public enum STRUCTUREEFFECT {
         CONQUER,
         DESTROY
     }

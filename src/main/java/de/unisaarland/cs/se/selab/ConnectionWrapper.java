@@ -117,14 +117,14 @@ public class ConnectionWrapper {
         this.connection.sendSetBattleGround(commId(playerId));
     }
 
-    public void sendActNow(final int playerId) {
-        LOGGER.debug("Player {} must act", playerId);
-        this.connection.sendActNow(commId(playerId));
-    }
-
     public void sendCounterSpell(final int playerId) {
         LOGGER.debug("Player {} can counter a spell", playerId);
         this.connection.sendCounterSpell(commId(playerId));
+    }
+
+    public void sendActNow(final int playerId) {
+        LOGGER.debug("Player {} must act", playerId);
+        this.connection.sendActNow(commId(playerId));
     }
 
     /////////////////////////////////////////////

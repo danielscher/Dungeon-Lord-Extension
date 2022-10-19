@@ -28,59 +28,6 @@ public class DigTunnelCommand extends PlayerCommand {
         this.coordinate = new Coordinate(x, y);
     }
 
-    @Override
-    public Set<State.Phase> inPhase() {
-        return Set.of(State.Phase.PLACING_TUNNEL);
-    }
-
-    @Override
-    public ActionResult run(final Model model, final ConnectionWrapper connection) {
-        final Player player = model.getPlayerById(getId());
-
-        if (player.getNumTunnelDigsAllowed() <= 0) {
-            connection.sendActionFailed(getId(), "You have no tunnels left to place.");
-            return ActionResult.RETRY;
-        }
-
-        final Dungeon dungeon = player.getDungeon();
-        final TunnelGraph graph = dungeon.getGraph();
-        if (DigTunnelCommand.violatesTunnelBuildingRestrictions(
-                this.coordinate,
-                graph,
-                model.getDungeonSideLength()) || !isConnected(this.coordinate, graph)) {
-            connection.sendActionFailed(getId(), "You cannot place your tunnel here.");
-            return ActionResult.RETRY;
-        }
-
-        final int currentMiners = (int) graph.stream().filter(Tunnel::hasTunnelMiningImp).count();
-        final boolean needSupervisor = currentMiners == BuildingState.NO_SUPERVISION_LIMIT;
-        final int neededImps = needSupervisor ? MINER_AND_SUPERVISOR : MINER;
-        if (player.getImps() < neededImps) {
-            connection.sendActionFailed(getId(), "You do not have enough imps for that left.");
-            return ActionResult.RETRY;
-        }
-
-        if (needSupervisor) {
-            dungeon.addSupervision();
-        }
-        player.changeImps(-neededImps);
-        connection.sendImpsChanged(getId(), -neededImps);
-        player.digTunnel();
-        graph.addTunnel(new Tunnel(this.coordinate, true));
-        connection.sendTunnelDug(getId(), this.coordinate);
-        // check if a counter spell was found.
-        if (checkIfCounterSpellFound(this.coordinate, model.getDungeonSideLength(),
-                model.getRandom())) {
-            player.addCounterSpell();
-            connection.sendCounterSpellFound(player.getId());
-        }
-        if (player.getNumTunnelDigsAllowed() <= 0) {
-            return ActionResult.PROCEED;
-        } else {
-            return ActionResult.RETRY;
-        }
-    }
-
     /**
      * Check whether the given coordinate is connected to a tunnel graph.
      *
@@ -139,6 +86,59 @@ public class DigTunnelCommand extends PlayerCommand {
 
         // Check if already a tunnel
         return graph.getTunnel(coordinate).isPresent();
+    }
+
+    @Override
+    public Set<State.Phase> inPhase() {
+        return Set.of(State.Phase.PLACING_TUNNEL);
+    }
+
+    @Override
+    public ActionResult run(final Model model, final ConnectionWrapper connection) {
+        final Player player = model.getPlayerById(getId());
+
+        if (player.getNumTunnelDigsAllowed() <= 0) {
+            connection.sendActionFailed(getId(), "You have no tunnels left to place.");
+            return ActionResult.RETRY;
+        }
+
+        final Dungeon dungeon = player.getDungeon();
+        final TunnelGraph graph = dungeon.getGraph();
+        if (DigTunnelCommand.violatesTunnelBuildingRestrictions(
+                this.coordinate,
+                graph,
+                model.getDungeonSideLength()) || !isConnected(this.coordinate, graph)) {
+            connection.sendActionFailed(getId(), "You cannot place your tunnel here.");
+            return ActionResult.RETRY;
+        }
+
+        final int currentMiners = (int) graph.stream().filter(Tunnel::hasTunnelMiningImp).count();
+        final boolean needSupervisor = currentMiners == BuildingState.NO_SUPERVISION_LIMIT;
+        final int neededImps = needSupervisor ? MINER_AND_SUPERVISOR : MINER;
+        if (player.getImps() < neededImps) {
+            connection.sendActionFailed(getId(), "You do not have enough imps for that left.");
+            return ActionResult.RETRY;
+        }
+
+        if (needSupervisor) {
+            dungeon.addSupervision();
+        }
+        player.changeImps(-neededImps);
+        connection.sendImpsChanged(getId(), -neededImps);
+        player.digTunnel();
+        graph.addTunnel(new Tunnel(this.coordinate, true));
+        connection.sendTunnelDug(getId(), this.coordinate);
+        // check if a counter spell was found.
+        if (checkIfCounterSpellFound(this.coordinate, model.getDungeonSideLength(),
+                model.getRandom())) {
+            player.addCounterSpell();
+            connection.sendCounterSpellFound(player.getId());
+        }
+        if (player.getNumTunnelDigsAllowed() <= 0) {
+            return ActionResult.PROCEED;
+        } else {
+            return ActionResult.RETRY;
+        }
     }
 
     /**

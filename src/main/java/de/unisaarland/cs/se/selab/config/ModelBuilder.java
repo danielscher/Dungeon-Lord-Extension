@@ -47,16 +47,18 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
 
     @Override
     public void addMonster(final int id, final int hunger, final int damage, final int evilness,
-                           final String attack) {
+            final String attack) {
         this.monsters.add(
                 new Monster(id, hunger, damage, evilness, AttackStrategy.valueOf(attack)));
     }
 
     @Override
-    public void addAdventurer(final int id, final int difficulty, final int healthPoints,final int magicPoints,
-                              final int healValue, final int defuseValue, final boolean charge) {
+    public void addAdventurer(final int id, final int difficulty, final int healthPoints,
+            final int magicPoints,
+            final int healValue, final int defuseValue, final boolean charge) {
         this.adventurers.add(
-                new Adventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue, charge));
+                new Adventurer(id, difficulty, healthPoints, magicPoints, healValue, defuseValue,
+                        charge));
     }
 
     @Override
@@ -71,7 +73,7 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
 
     @Override
     public void addRoom(final int id, final int activation, final String restriction,
-                        final int food, final int gold, final int imps, final int niceness) {
+            final int food, final int gold, final int imps, final int niceness) {
         final EnumMap<BidType, Integer> production = new EnumMap<>(BidType.class);
         if (food > 0) {
             production.put(BidType.FOOD, food);
@@ -94,16 +96,18 @@ public class ModelBuilder implements ModelBuilderInterface<Model> {
             String bidTypeBlocked, String structureEffect, int healthBuff, int healBuff,
             int defuseBuff) {
         Spell spell = null;
-        switch (spellType){
-            case "BUFF" -> spell = new BuffSpell(id,bidType,slot,healthBuff,healBuff,defuseBuff);
-            case "RESOURCE" -> spell = new ResourceSpell(id,bidType,slot,food,gold);
-            case "BIDDING" -> spell = new BiddingSpell(id,bidType,slot,bidTypeBlocked);
-            case "ROOM" -> spell = new RoomSpell(id,bidType,slot);
-            case "STRUCTURE" -> spell = new StructureSpell(id,bidType,slot,structureEffect);
+        switch (spellType) {
+            case "BUFF" ->
+                    spell = new BuffSpell(id, bidType, slot, healthBuff, healBuff, defuseBuff);
+            case "RESOURCE" -> spell = new ResourceSpell(id, bidType, slot, food, gold);
+            case "BIDDING" -> spell = new BiddingSpell(id, bidType, slot, bidTypeBlocked);
+            case "ROOM" -> spell = new RoomSpell(id, bidType, slot);
+            case "STRUCTURE" -> spell = new StructureSpell(id, bidType, slot, structureEffect);
+            default -> throw new IllegalArgumentException(
+                    String.format("%s is not allowed", spellType));
         }
         this.spells.add(spell);
     }
-
 
 
     @Override

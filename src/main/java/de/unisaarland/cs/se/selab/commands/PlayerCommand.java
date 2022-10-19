@@ -32,7 +32,7 @@ public abstract class PlayerCommand extends Command {
      */
     @Override
     public ActionResult execute(final Model model, final ConnectionWrapper connection,
-                                final State.Phase phase, final Player player) {
+            final State.Phase phase, final Player player) {
         if (checkPlayer(player)) {
             return execute(model, connection, phase);
         } else {

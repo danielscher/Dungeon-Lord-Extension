@@ -121,6 +121,7 @@ public class Adventurer {
 
     /**
      * set a buff value if the corresponding property is larger than 0.
+     *
      * @param healBuff the amount of buff
      */
     public void setHealBuff(int healBuff) {
@@ -131,6 +132,7 @@ public class Adventurer {
 
     /**
      * set a buff value if the corresponding property is larger than 0.
+     *
      * @param defuseBuff the amount of buff
      */
     public void setDefuseBuff(int defuseBuff) {

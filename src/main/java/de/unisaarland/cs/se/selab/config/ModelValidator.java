@@ -4,7 +4,7 @@ import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.model.AttackStrategy;
 import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.spells.SpellType;
-import de.unisaarland.cs.se.selab.model.spells.SpellType.STRUCTURE_EFFECT;
+import de.unisaarland.cs.se.selab.model.spells.SpellType.STRUCTUREEFFECT;
 import de.unisaarland.cs.se.selab.state.BuildingState;
 import java.util.HashSet;
 import java.util.Set;
@@ -232,7 +232,7 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 checkAttrIsNull("food", food);
                 checkAttrIsNull("gold", gold);
                 checkAttrIsNull(bidTypeBlocked);
-                STRUCTURE_EFFECT.valueOf(structureEffect);
+                STRUCTUREEFFECT.valueOf(structureEffect);
                 checkPositiveNonZero("healthBuff", healthBuff);
                 checkPositiveNonZero("healBuff", healBuff);
                 checkPositiveNonZero("defuseBuff", defuseBuff);
@@ -327,5 +327,4 @@ public class ModelValidator<M> implements ModelBuilderInterface<M> {
                 rounds * BuildingState.MONSTERS_PER_ROUND);
         return this.builder.build();
     }
-//TODO : ADD SPELL VALIDATOR
 }

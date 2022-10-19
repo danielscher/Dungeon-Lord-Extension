@@ -26,11 +26,11 @@ public class Monster extends DefensiveMeasure {
         return this.evilness;
     }
 
-    public void setUsed(final boolean used) {
-        this.used = used;
-    }
-
     public boolean isUsed() {
         return this.used;
+    }
+
+    public void setUsed(final boolean used) {
+        this.used = used;
     }
 }

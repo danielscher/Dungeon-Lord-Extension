@@ -10,15 +10,7 @@ import java.util.Optional;
  */
 public class Room {
 
-    public enum BuildingRestriction {
-        UPPER_HALF,
-        OUTER_RING,
-        INNER_RING,
-        LOWER_HALF
-    }
-
     public static final int MONSTER_LIMIT = 2;
-
     private final Map<BidType, Integer> production;
     private final BuildingRestriction restriction;
     private final int activationImps;
@@ -26,7 +18,7 @@ public class Room {
     private boolean activated;
 
     public Room(final int id, final int activationImps, final BuildingRestriction restriction,
-                final EnumMap<BidType, Integer> production) {
+            final EnumMap<BidType, Integer> production) {
         super();
         this.activationImps = activationImps;
         this.production = production;
@@ -70,5 +62,12 @@ public class Room {
         } else {
             return 0;
         }
+    }
+
+    public enum BuildingRestriction {
+        UPPER_HALF,
+        OUTER_RING,
+        INNER_RING,
+        LOWER_HALF
     }
 }

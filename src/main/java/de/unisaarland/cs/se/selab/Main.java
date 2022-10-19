@@ -45,7 +45,6 @@ public class Main {
             final long seed = Long.parseLong(cmd.getOptionValue("seed"));
             final int timeout = Integer.parseInt(cmd.getOptionValue("timeout")) * 1000;
 
-
             final ModelBuilderInterface<Model> builder = new ModelValidator<>(new ModelBuilder());
             builder.setSeed(seed);
 
@@ -68,8 +67,8 @@ public class Main {
     }
 
     private static void addCmdLineOption(final Options options, final String argName,
-                                         final String longOpt,
-                                         final String desc) {
+            final String longOpt,
+            final String desc) {
         options.addOption(Option.builder()
                 .required()
                 .longOpt(longOpt)

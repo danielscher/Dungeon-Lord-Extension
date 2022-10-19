@@ -28,7 +28,7 @@ public final class CombatState extends State {
     private static final int EVILNESS_WHEN_CONQUERED = -1;
     private static final int FATIGUE_DAMAGE = 2;
     private static final int REDUCED_FATIGUE_DAMAGE = 1;
-    private boolean LinusPresent;
+    private boolean linusPresent;
     private boolean earlyConquer;
 
     public CombatState(final Model model, final ConnectionWrapper connection) {
@@ -174,7 +174,7 @@ public final class CombatState extends State {
         // Deal fatigue damage
         for (final Adventurer adventurer : dungeon.getAllAdventurers()) {
             hurtAdventurer(adventurer, player,
-                    LinusPresent ? CombatState.REDUCED_FATIGUE_DAMAGE : CombatState.FATIGUE_DAMAGE);
+                    linusPresent ? CombatState.REDUCED_FATIGUE_DAMAGE : CombatState.FATIGUE_DAMAGE);
         }
     }
 
@@ -218,12 +218,12 @@ public final class CombatState extends State {
                 // i
                 if (player.getDungeon().imprisonAdventurer(adventurer)) {
                     connection.sendAdventurerImprisoned(adventurer.getId());
-                    LinusPresent = checkIfLinusAppears(player, model.getRandom(),
+                    linusPresent = checkIfLinusAppears(player, model.getRandom(),
                             model.getMaxYear(),
                             model.getYear()
                     );
                     if (model.getRound() == 4) {
-                        LinusPresent = false;
+                        linusPresent = false;
                     }
                 }
             } else {
@@ -308,7 +308,7 @@ public final class CombatState extends State {
      */
     private ActionResult castSpells(final Player player, final int round) {
         final int advMagicPoints = player.getDungeon().getAdventurerMagicPoints();
-        final int totalMagicPoints = LinusPresent ? advMagicPoints + 3 : advMagicPoints;
+        final int totalMagicPoints = linusPresent ? advMagicPoints + 3 : advMagicPoints;
         boolean earlyConquerFlag = false;
         // cast all spells in FIFO.
         for (Spell spell : player.getSpellsForRound(round)) {
@@ -320,6 +320,7 @@ public final class CombatState extends State {
             // check if a player can counter.
             if (player.getNumCounterSpells() > 0) {
                 // handle player action.
+                connection.sendCounterSpell(player.getId());
                 final ActionResult counterSpellResult = ConnectionUtils.executePlayerCommand(model,
                         connection, Phase.COMBAT, player);
                 // if last player left game will end.

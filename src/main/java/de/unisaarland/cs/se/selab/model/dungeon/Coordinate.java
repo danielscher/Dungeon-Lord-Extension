@@ -12,14 +12,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public record Coordinate(int posX, int posY) {
 
-    public enum Direction {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST,
-
-    }
-
     /**
      * Get the neighbouring coordinate in the given direction.
      *
@@ -29,10 +21,10 @@ public record Coordinate(int posX, int posY) {
     @NotNull
     public Coordinate getNeighbor(final Direction direction) {
         return switch (direction) {
-            case EAST  -> new Coordinate(posX() + 1, posY());
+            case EAST -> new Coordinate(posX() + 1, posY());
             case NORTH -> new Coordinate(posX(), posY() - 1);
             case SOUTH -> new Coordinate(posX(), posY() + 1);
-            case WEST  -> new Coordinate(posX() - 1, posY());
+            case WEST -> new Coordinate(posX() - 1, posY());
         };
     }
 
@@ -43,5 +35,13 @@ public record Coordinate(int posX, int posY) {
      */
     public List<Coordinate> getNeighbours() {
         return Arrays.stream(Direction.values()).map(this::getNeighbor).toList();
+    }
+
+    public enum Direction {
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST,
+
     }
 }

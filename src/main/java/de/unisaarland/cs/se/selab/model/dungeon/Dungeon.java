@@ -22,12 +22,12 @@ public class Dungeon {
         this.graph = new TunnelGraph();
     }
 
-    public void setBattleGround(final Tunnel battleGround) {
-        this.battleGround = battleGround;
-    }
-
     public Optional<Tunnel> getBattleGround() {
         return Optional.ofNullable(this.battleGround);
+    }
+
+    public void setBattleGround(final Tunnel battleGround) {
+        this.battleGround = battleGround;
     }
 
     public TunnelGraph getGraph() {
@@ -148,8 +148,7 @@ public class Dungeon {
     }
 
     /**
-     * Imprison the given adventurer.
-     * and check if he had magic points
+     * Imprison the given adventurer. and check if he had magic points
      *
      * @param adventurer the defeated adventurer
      */
@@ -196,10 +195,9 @@ public class Dungeon {
     }
 
     /**
-     *
      * @return the sum of magic points of all the adventurers in the queue.
      */
     public int getAdventurerMagicPoints() {
-        return queuingAdventurers.stream().map(Adventurer::getMagicPoints).reduce(0,Integer::sum);
+        return queuingAdventurers.stream().map(Adventurer::getMagicPoints).reduce(0, Integer::sum);
     }
 }

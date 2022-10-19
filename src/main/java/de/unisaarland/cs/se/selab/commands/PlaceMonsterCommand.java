@@ -53,5 +53,5 @@ public abstract class PlaceMonsterCommand extends PlayerCommand {
     }
 
     protected abstract ActionResult placeMonster(Monster monster, Dungeon dungeon,
-                                                 Tunnel battleGround, ConnectionWrapper connection);
+            Tunnel battleGround, ConnectionWrapper connection);
 }

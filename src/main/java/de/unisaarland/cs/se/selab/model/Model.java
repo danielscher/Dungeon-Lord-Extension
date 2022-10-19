@@ -225,8 +225,8 @@ public class Model {
     }
 
     /**
-     * search for a spell that is triggered by bid and slot
-     * retrive and delete it from available spells.
+     * search for a spell that is triggered by bid and slot retrive and delete it from available
+     * spells.
      *
      * @param bid  Category that triggers the spell
      * @param slot slot number that triggers the spell

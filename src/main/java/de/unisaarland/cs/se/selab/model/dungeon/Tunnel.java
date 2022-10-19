@@ -15,6 +15,7 @@ public class Tunnel {
     private static final int MONSTER_LIMIT = 1;
 
     private final Coordinate coordinate;
+    private final List<Monster> monsters;
     private boolean goldMiningImp;
     private boolean tunnelMiningImp;
     private boolean conquered;
@@ -22,7 +23,6 @@ public class Tunnel {
     private Room room;
     @Nullable
     private Trap trap;
-    private final List<Monster> monsters;
 
     public Tunnel(final Coordinate coordinate, final boolean isBeingMined) {
         this.monsters = new ArrayList<>();

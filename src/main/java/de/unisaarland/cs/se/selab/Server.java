@@ -22,8 +22,8 @@ public class Server {
     }
 
     /**
-     * This function contains the game loop.
-     * It starts with the registration phase and ends if it encounters an end state.
+     * This function contains the game loop. It starts with the registration phase and ends if it
+     * encounters an end state.
      */
     public final void run() {
         State currentState = new RegistrationState(this.model, this.connection);

@@ -17,7 +17,7 @@ public class LeaveCommand extends Command {
 
     @Override
     public ActionResult execute(final Model model, final ConnectionWrapper connection,
-                                final Phase phase) {
+            final Phase phase) {
 
         final Player player = model.getPlayerById(getId());
         player.kill();

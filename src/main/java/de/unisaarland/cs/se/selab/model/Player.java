@@ -253,21 +253,21 @@ public class Player {
     }
 
     /**
-     * Set the number of tunnels the player is allowed to dig.
-     *
-     * @param numTunnelDigsAllowed the number of tunnels a player may dig
-     */
-    public final void setNumTunnelDigsAllowed(final int numTunnelDigsAllowed) {
-        this.numTunnelDigsAllowed = numTunnelDigsAllowed;
-    }
-
-    /**
      * Get the number of tunnels the player is allowed to dig.
      *
      * @return the number of tunnels a player may dig
      */
     public final int getNumTunnelDigsAllowed() {
         return this.numTunnelDigsAllowed;
+    }
+
+    /**
+     * Set the number of tunnels the player is allowed to dig.
+     *
+     * @param numTunnelDigsAllowed the number of tunnels a player may dig
+     */
+    public final void setNumTunnelDigsAllowed(final int numTunnelDigsAllowed) {
+        this.numTunnelDigsAllowed = numTunnelDigsAllowed;
     }
 
     /**

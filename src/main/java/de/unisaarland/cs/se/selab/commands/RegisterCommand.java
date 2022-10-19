@@ -20,7 +20,7 @@ public class RegisterCommand extends Command {
 
     @Override
     public ActionResult execute(final Model model, final ConnectionWrapper connection,
-                                final State.Phase phase) {
+            final State.Phase phase) {
         if (this.withCommId) {
             if (phase != State.Phase.REGISTRATION) {
                 return ActionResult.RETRY;

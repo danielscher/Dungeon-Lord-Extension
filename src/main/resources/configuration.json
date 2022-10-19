@@ -961,7 +961,8 @@
       "bidType": "GOLD",
       "slot": 3,
       "gold": 1
-    },{
+    },
+    {
       "id": 12,
       "spellType": "RESOURCE",
       "bidType": "TRAP",
@@ -1001,7 +1002,8 @@
       "bidType": "GOLD",
       "slot": 3,
       "gold": 1
-    },{
+    },
+    {
       "id": 18,
       "spellType": "RESOURCE",
       "bidType": "FOOD",

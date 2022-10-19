@@ -34,12 +34,11 @@ public abstract class Command {
     /**
      * Execute a player command/action.
      * <p>
-     * Certain commands/actions are executed for a single player individually.
-     * This version of the {@code execute()} function takes that player as an additional parameter.
-     * The default behavior is the same as
-     * {@link Command#execute(Model, ConnectionWrapper, State.Phase)}.
-     * However, the {@link PlayerCommand} overrides this function to check whether it is the given
-     * player's turn.
+     * Certain commands/actions are executed for a single player individually. This version of the
+     * {@code execute()} function takes that player as an additional parameter. The default behavior
+     * is the same as {@link Command#execute(Model, ConnectionWrapper, State.Phase)}. However, the
+     * {@link PlayerCommand} overrides this function to check whether it is the given player's
+     * turn.
      * </p>
      *
      * @param model      the model to which the action based changes should apply
@@ -50,7 +49,7 @@ public abstract class Command {
      * @see PlayerCommand
      */
     public ActionResult execute(final Model model, final ConnectionWrapper connection,
-                                final State.Phase phase, final Player player) {
+            final State.Phase phase, final Player player) {
         return execute(model, connection, phase);
     }
 
@@ -58,9 +57,9 @@ public abstract class Command {
      * Execute a command/action.
      * <p>
      * This method implements some general checks, e.g., whether this command may be executed in the
-     * current game phase.
-     * If the checks succeed, this method calls {@link Command#run(Model, ConnectionWrapper)}.
-     * So, for most commands it suffices to override the {@code run() function}.
+     * current game phase. If the checks succeed, this method calls
+     * {@link Command#run(Model, ConnectionWrapper)}. So, for most commands it suffices to override
+     * the {@code run() function}.
      * </p>
      *
      * @param model      the model to which the action based changes should apply
@@ -69,7 +68,7 @@ public abstract class Command {
      * @return a result that indicates how the game should continue
      */
     public ActionResult execute(final Model model, final ConnectionWrapper connection,
-                                final State.Phase phase) {
+            final State.Phase phase) {
         if (inPhase().contains(phase)) {
             return this.run(model, connection);
         }

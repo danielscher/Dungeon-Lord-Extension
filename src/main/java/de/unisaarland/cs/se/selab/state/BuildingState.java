@@ -289,11 +289,12 @@ public final class BuildingState extends State {
     }
 
     /**
-     * helper method to clear all rounds for which the rooms are blocked
-     * should be called at the end of building year.
+     * helper method to clear all rounds for which the rooms are blocked should be called at the end
+     * of building year.
+     *
      * @param players all present players in game.
      */
-    private void resetRoomSpell(List<Player> players){
+    private void resetRoomSpell(List<Player> players) {
         players.forEach(Player::clearRoomCurse);
     }
 }
