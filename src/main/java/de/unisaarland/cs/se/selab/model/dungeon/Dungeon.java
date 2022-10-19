@@ -183,4 +183,14 @@ public class Dungeon {
         return this.prison.size();
     }
 
+    public Optional<Room> destroyRoom() {
+        Optional<Tunnel> tunnelWithClosestRoom = getGraph().getClosestTunnelWithRoom(battleGround);
+        if (tunnelWithClosestRoom.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<Room> room = tunnelWithClosestRoom.get().getRoom();
+        tunnelWithClosestRoom.ifPresent(Tunnel::destroyRoom);
+        return room;
+    }
+
 }
