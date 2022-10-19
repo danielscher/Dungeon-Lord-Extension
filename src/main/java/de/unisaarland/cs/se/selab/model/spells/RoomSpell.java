@@ -1,15 +1,21 @@
 package de.unisaarland.cs.se.selab.model.spells;
 
 
-public class RoomSpell extends Spell{
+import de.unisaarland.cs.se.selab.ConnectionWrapper;
+import de.unisaarland.cs.se.selab.model.Player;
+
+public class RoomSpell extends Spell {
 
 
     public RoomSpell(int id, String triggerBid, int triggerSlot) {
-        super(id, triggerBid, triggerSlot);
+        super(id, triggerBid, triggerSlot, 3);
     }
 
     @Override
-    public void cast() {
-
+    public boolean cast(Player player, ConnectionWrapper connection, int advMagicPoints) {
+        int round = player.getRoundOfSpell(this);
+        player.curseRooms(round);
+        connection.sendRoomsBlocked(player.getId(),round);
+        return false;
     }
 }
