@@ -131,14 +131,13 @@ public class TunnelGraph {
         return result;
     }
 
-    public Optional<Optional<Room>> getClosestRoom(Tunnel battleGroundTunnel) { // battleground
+    public Optional<Tunnel> getClosestTunnelWithRoom(Tunnel battleGroundTunnel) { // battleground
 
         // if bg tile has a room returns it immediately.
         if (battleGroundTunnel.isRoom()) {
-            return Optional.ofNullable(battleGroundTunnel.getRoom());
+            return Optional.of(battleGroundTunnel);
         }
 
-        List<Optional<Room>> rooms;
         final Set<Tunnel> visited = new HashSet<>();
         Set<Tunnel> depthLevel = new HashSet<>(List.of(battleGroundTunnel));
         while (!depthLevel.isEmpty()) {
@@ -148,12 +147,11 @@ public class TunnelGraph {
 
             // if rooms are found returns the room with the lowest id.
             if (!tunnelsWithRoom.isEmpty()) {
-                rooms = tunnelsWithRoom.stream().map(Tunnel::getRoom).collect(Collectors.toList());
-                if (rooms.size() == 1){
-                    return Optional.ofNullable(rooms.get(0));
+                if (tunnelsWithRoom.size() == 1) {
+                    return tunnelsWithRoom.stream().findAny();
                 }
-                return Optional.of(rooms.stream().flatMap(Optional::stream)
-                        .min(Comparator.comparing(Room::getId)));
+                return tunnelsWithRoom.stream().filter(t -> t.getRoom().isPresent())
+                        .min(Comparator.comparingInt(t -> t.getRoom().get().getId()));
             }
 
             // Next level contains all unvisited neighbors of the current level
