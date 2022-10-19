@@ -118,12 +118,20 @@ public class Adventurer {
         this.healthBuff = healthBuff;
     }
 
+    /**
+     * set a buff value if the corresponding property is larger than 0.
+     * @param healBuff the amount of buff
+     */
     public void setHealBuff(int healBuff) {
         if (healValue > 0) {
             this.healBuff = healBuff;
         }
     }
 
+    /**
+     * set a buff value if the corresponding property is larger than 0.
+     * @param defuseBuff the amount of buff
+     */
     public void setDefuseBuff(int defuseBuff) {
         if (defuseValue > 0) {
             this.defuseBuff = defuseBuff;
