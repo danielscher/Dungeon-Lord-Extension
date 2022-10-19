@@ -11,6 +11,7 @@ import de.unisaarland.cs.se.selab.model.Player;
 import de.unisaarland.cs.se.selab.model.dungeon.Coordinate;
 import de.unisaarland.cs.se.selab.model.dungeon.Dungeon;
 import de.unisaarland.cs.se.selab.model.dungeon.Tunnel;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ public final class CombatState extends State {
 
     private static final int EVILNESS_WHEN_CONQUERED = -1;
     private static final int FATIGUE_DAMAGE = 2;
+    private boolean earlyConquer;
 
     public CombatState(final Model model, final ConnectionWrapper connection) {
         super(model, connection);
@@ -101,9 +103,16 @@ public final class CombatState extends State {
         if (!player.isAlive()) {
             return defendResult;
         }
-        damageAdventurers(player);
+        final ActionResult castSpellsResult = castSpells(player, model.getRound());
+        if (!player.isAlive()) {
+            return castSpellsResult;
+        }
+        if (!earlyConquer) {
+            damageAdventurers(player);
+            adventurersConquer(player);
+            priestsHeal(player.getDungeon().getAllAdventurers());
+        }
         adventurersConquer(player);
-        priestsHeal(player.getDungeon().getAllAdventurers());
         return ActionResult.PROCEED;
     }
 
@@ -161,7 +170,7 @@ public final class CombatState extends State {
     }
 
     private void evaluateDefense(final DefensiveMeasure defense, final Player player,
-                                 final int totalReduction) {
+            final int totalReduction) {
         final Dungeon dungeon = player.getDungeon();
         switch (defense.getAttackStrategy()) {
             case BASIC -> {
@@ -193,7 +202,7 @@ public final class CombatState extends State {
     }
 
     private void hurtAdventurer(final Adventurer adventurer, final Player player,
-                                final int damage) {
+            final int damage) {
         final int effectiveDamage = adventurer.damage(damage);
         if (effectiveDamage > 0) {
             if (adventurer.isDefeated()) {
@@ -257,7 +266,7 @@ public final class CombatState extends State {
     }
 
     private void processTitle(final Collection<Player> players,
-                              final Function<Player, Integer> title) {
+            final Function<Player, Integer> title) {
         final Optional<Player> optWinner = players.stream()
                 .max(Comparator.comparing(title));
         if (optWinner.isPresent()) {
@@ -273,5 +282,39 @@ public final class CombatState extends State {
                 optWinner.get().changeScorePoints(1);
             }
         }
+    }
+
+    /**
+     * @param player the player on which the spells will be cast
+     * @param round  current round of combat
+     * @return END_GAME if last player left or PROCEED in normal situation.
+     */
+    private ActionResult castSpells(final Player player, final int round) {
+        boolean earlyConquerFlag = false;
+        // cast all spells in FIFO.
+        for (Spell spell : player.getSpellsForRound(round)) {
+            connection.sendSpellCast(spell.getId(), player.getId());
+            // check if a player can counter.
+            if (player.getNumCounterSpells() > 0) {
+                // handle player action.
+                final ActionResult counterSpellResult = ConnectionUtils.executePlayerCommand(model,
+                        connection, Phase.COMBAT, player);
+                // if last player left game will end.
+                if (counterSpellResult == ActionResult.END_GAME) {
+                    return ActionResult.END_GAME;
+                }
+                // checks if player has actually countered a spell.
+                // if he didn't we cast spell.
+                if (!player.hasCountered()) {
+                    earlyConquerFlag = spell.cast(player, connection, round);
+                }
+                player.resetCounterFlag();
+            }
+            // if spell was a structure spell that conquers we set the flag.
+            if (earlyConquerFlag) {
+                earlyConquer = true;
+            }
+        }
+        return ActionResult.PROCEED;
     }
 }
