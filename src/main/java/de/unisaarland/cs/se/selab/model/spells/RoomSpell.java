@@ -12,7 +12,7 @@ public class RoomSpell extends Spell {
     }
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection, int advMagicPoints) {
+    public boolean cast(Player player, ConnectionWrapper connection) {
         int round = player.getRoundOfSpell(this);
         player.curseRooms(round);
         connection.sendRoomsBlocked(player.getId(),round);

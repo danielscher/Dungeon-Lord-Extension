@@ -18,8 +18,7 @@ public abstract class Spell {
         this.cost = cost;
     }
 
-    public abstract boolean cast(Player player, ConnectionWrapper connection,
-            final int advMagicPoints);
+    public abstract boolean cast(Player player, ConnectionWrapper connection);
 
 
     public int getId() {
@@ -34,4 +33,7 @@ public abstract class Spell {
         return triggerSlot;
     }
 
+    public int getCost() {
+        return this.cost;
+    }
 }

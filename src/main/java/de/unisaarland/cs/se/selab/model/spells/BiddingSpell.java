@@ -15,7 +15,7 @@ public class BiddingSpell extends Spell {
     }
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection, int advMagicPoints) {
+    public boolean cast(Player player, ConnectionWrapper connection) {
         final int round = player.getRoundOfSpell(this);
         player.curseBid(blockBidType,round);
         return false;

@@ -10,7 +10,7 @@ public class ResourceSpell extends Spell {
 
     public ResourceSpell(final int id, String triggerBid,
             final int triggerSlot, final int food, final int gold) {
-        super(id, triggerBid, triggerSlot,1);
+        super(id, triggerBid, triggerSlot, 1);
         this.food = food;
         this.gold = gold;
 
@@ -18,28 +18,26 @@ public class ResourceSpell extends Spell {
 
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection, int advMagicPoints) {
-        if (cost <= advMagicPoints) {
-            changeFoodBySpell(player,connection,food);
-            changeGoldBySpell(player,connection,gold);
-            player.curse();
-        }
+    public boolean cast(Player player, ConnectionWrapper connection) {
+        changeFoodBySpell(player, connection, food);
+        changeGoldBySpell(player, connection, gold);
+        player.curse();
         return false;
     }
 
     private void changeGoldBySpell(Player player, ConnectionWrapper connection, int amount) {
-        if (player.getGold()>0 && amount > 0){
+        if (player.getGold() > 0 && amount > 0) {
             final int effectiveAmount = -Math.min(amount, player.getGold());
             player.changeGold(effectiveAmount);
-            connection.sendGoldChanged(player.getId(),effectiveAmount);
+            connection.sendGoldChanged(player.getId(), effectiveAmount);
         }
     }
 
     private void changeFoodBySpell(Player player, ConnectionWrapper connection, final int amount) {
-        if (player.getFood()>0 && amount > 0){
+        if (player.getFood() > 0 && amount > 0) {
             final int effectiveAmount = -Math.min(amount, player.getFood());
             player.changeFood(effectiveAmount);
-            connection.sendFoodChanged(player.getId(),effectiveAmount);
+            connection.sendFoodChanged(player.getId(), effectiveAmount);
         }
     }
 }

@@ -21,15 +21,13 @@ public class BuffSpell extends Spell {
     }
 
     @Override
-    public boolean cast(Player player, ConnectionWrapper connection, int advMagicPoints) {
-        if (advMagicPoints >= cost) {
-            player.getDungeon().getAllAdventurers().forEach(adv -> {
-                adv.setHealBuff(healBuff);
-                adv.setHealthBuff(healthBuff);
-                adv.setDefuseBuff(defuseBuff);
-            });
-            player.curse();
-        }
+    public boolean cast(Player player, ConnectionWrapper connection) {
+        player.getDungeon().getAllAdventurers().forEach(adv -> {
+            adv.setHealBuff(healBuff);
+            adv.setHealthBuff(healthBuff);
+            adv.setDefuseBuff(defuseBuff);
+        });
+        player.curse();
         return false;
     }
 }
