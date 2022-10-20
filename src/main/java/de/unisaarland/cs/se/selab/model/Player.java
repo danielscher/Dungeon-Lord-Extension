@@ -319,7 +319,7 @@ public class Player {
     }
 
     public List<Spell> getSpellsForRound(final int round) {
-        if (spells.size() >= round) {
+        if (spells.containsKey(round-1)) {
             return spells.get(round - 1);
         } else {
             return null;
