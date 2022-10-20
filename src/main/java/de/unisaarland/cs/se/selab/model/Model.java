@@ -332,7 +332,7 @@ public class Model {
      * @return the drawn spell
      */
     public final Spell drawSpell() {
-        final Spell spell = this.spells.get(0);
+        final Spell spell = this.spells.remove(0);
         this.availableSpells.add(spell);
         return spell;
     }
