@@ -322,7 +322,7 @@ public class Player {
         if (spells.containsKey(round - 1)) {
             return spells.get(round - 1);
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
