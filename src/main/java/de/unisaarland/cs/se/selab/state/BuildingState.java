@@ -148,6 +148,11 @@ public final class BuildingState extends State {
         final List<Bid> bidList = biddingSquare.getOrDefault(bidType, new ArrayList<>());
         if (bidList.size() < 3) {
             final Bid bid = Bid.createBid(bidType, player, bidList.size() + 1);
+            // add bids to player (send event later in evaluation)
+            final List<Spell> spells = model.getTriggeredSpell(bidType, bidList.size() + 1);
+            if (!spells.isEmpty()) {
+                player.addSpell(spells, model.getRound());
+            }
             bidList.add(bid);
             biddingSquare.put(bidType, bidList);
         }
@@ -229,14 +234,16 @@ public final class BuildingState extends State {
                     connection.sendImpsChanged(player.getId(), returnedImps);
                     for (final BidType type : BidType.values()) {
                         final Optional<Integer> production = room.getProduction(type);
-                        production.ifPresent(prod -> evaluateRoomProduction(player, prod, type));
+                        production.ifPresent(
+                                prod -> evaluateRoomProduction(player, prod, type));
                     }
                 }
             }
         }
     }
 
-    private void evaluateRoomProduction(final Player player, final int amount, final BidType type) {
+    private void evaluateRoomProduction(final Player player, final int amount,
+            final BidType type) {
         switch (type) {
             case FOOD -> ConnectionUtils.changeFood(player, amount, connection);
             case GOLD -> ConnectionUtils.changeGold(player, amount, connection);

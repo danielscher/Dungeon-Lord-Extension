@@ -36,6 +36,7 @@ public class Model {
     private final List<Monster> availableMonsters;
     private final List<Room> availableRooms;
     private final List<Spell> availableSpells;
+    private final List<Spell> getAvailableSpellsCopy = new ArrayList<>(); // used for unlock event
     private final List<Adventurer> queueingAdventurers;
     private final int maxPlayers;
     private final int maxYear;
@@ -238,7 +239,14 @@ public class Model {
                 .filter(spell -> spell.getTriggerSlot() == slot).toList();
         spells.forEach(availableSpells::remove);
         return spells;
+    }
 
+    public final List<Spell> getTriggeredSpellCopy(final BidType bid, final int slot) {
+        final List<Spell> spells = this.getAvailableSpellsCopy.stream()
+                .filter(spell -> spell.getTriggerBid() == bid)
+                .filter(spell -> spell.getTriggerSlot() == slot).toList();
+        spells.forEach(getAvailableSpellsCopy::remove);
+        return spells;
     }
 
     /**
@@ -334,6 +342,7 @@ public class Model {
     public final Spell drawSpell() {
         final Spell spell = this.spells.remove(0);
         this.availableSpells.add(spell);
+        this.getAvailableSpellsCopy.add(spell);
         return spell;
     }
 
@@ -393,6 +402,7 @@ public class Model {
         this.availableRooms.clear();
         this.availableMonsters.clear();
         this.availableSpells.clear();
+        this.getAvailableSpellsCopy.clear();
         this.queueingAdventurers.clear();
     }
 
