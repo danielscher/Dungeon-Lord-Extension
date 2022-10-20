@@ -313,7 +313,9 @@ public class Player {
     }
 
     public void resetBiddingSpell(final int round) {
-        cursedBids.remove(round - 1);
+        if (cursedBids.size() >= round) {
+            cursedBids.remove(round - 1);
+        }
     }
 
     public List<Spell> getSpellsForRound(final int round) {
