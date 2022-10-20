@@ -152,10 +152,11 @@ public class DigTunnelCommand extends PlayerCommand {
 
         final int xCoordinate = coords.posX();
         final int yCoordinate = coords.posY();
-        final double result = xCoordinate * yCoordinate;
-        final double dieBound = Math.pow(dungeonLength, 2);
-        final double dieCast = random.nextDouble(dieBound + 1);
+        final int result = xCoordinate * yCoordinate;
+        final int dieBound = dungeonLength * dungeonLength;
+        // start die from 1.
+        final int dieCast = random.nextInt(dieBound + 1);
 
-        return result > dieCast;
+        return result >= dieCast;
     }
 }

@@ -84,9 +84,8 @@ public abstract class Bid {
     protected void unlockSpell(final Model model, final ConnectionWrapper connection,
             final Player player, final BidType type,
             final int slot) {
-        final List<Spell> spells = model.getTriggeredSpell(type, slot);
+        final List<Spell> spells = model.getTriggeredSpellCopy(type, slot);
         if (!spells.isEmpty()) {
-            player.addSpell(spells, model.getRound());
             spells.forEach(spell -> connection.sendSpellUnlocked(spell.getId(), player.getId()));
         }
     }

@@ -119,6 +119,7 @@ public final class CombatState extends State {
             damageAdventurers(player);
             adventurersConquer(player);
             priestsHeal(player.getDungeon().getAllAdventurers());
+            return ActionResult.PROCEED;
         }
         adventurersConquer(player);
         return ActionResult.PROCEED;

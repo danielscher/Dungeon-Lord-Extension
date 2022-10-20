@@ -313,7 +313,9 @@ public class Player {
     }
 
     public void resetBiddingSpell(final int round) {
-        cursedBids.remove(round - 1);
+        if (cursedBids.size() >= round) {
+            cursedBids.remove(round - 1);
+        }
     }
 
     public List<Spell> getSpellsForRound(final int round) {
@@ -340,7 +342,13 @@ public class Player {
     }
 
     public void addSpell(final List<Spell> triggeredSpells, final int round) {
-        spells.put(round - 1, triggeredSpells);
+        if (spells.containsKey(round - 1)) {
+            final List<Spell> vals = new ArrayList<>(spells.get(round - 1));
+            vals.addAll(triggeredSpells);
+            spells.put(round - 1, vals);
+        } else {
+            spells.put(round - 1, triggeredSpells);
+        }
     }
 
     public boolean hasCountered() {
