@@ -315,7 +315,11 @@ public final class CombatState extends State {
         final int totalMagicPoints = linusPresent ? advMagicPoints + 3 : advMagicPoints;
         boolean earlyConquerFlag = false;
         // cast all spells in FIFO.
-        for (final Spell spell : player.getSpellsForRound(round)) {
+        List<Spell> spells = player.getSpellsForRound(round);
+        if (spells == null) {
+            return ActionResult.PROCEED;
+        }
+        for (final Spell spell : spells) {
             // skip spell if adventurers don't have enough magic points.
             if (spell.getCost() > totalMagicPoints) {
                 continue;

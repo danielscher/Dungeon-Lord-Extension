@@ -319,7 +319,11 @@ public class Player {
     }
 
     public List<Spell> getSpellsForRound(final int round) {
-        return spells.get(round - 1);
+        if (spells.size() >= round) {
+            return spells.get(round - 1);
+        } else {
+            return null;
+        }
     }
 
     public int getRoundOfSpell(final Spell spell) {
