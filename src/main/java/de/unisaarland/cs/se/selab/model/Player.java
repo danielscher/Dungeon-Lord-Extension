@@ -319,7 +319,11 @@ public class Player {
     }
 
     public List<Spell> getSpellsForRound(final int round) {
-        return spells.get(round - 1);
+        if (spells.containsKey(round - 1)) {
+            return spells.get(round - 1);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public int getRoundOfSpell(final Spell spell) {
