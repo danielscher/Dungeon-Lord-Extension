@@ -2,6 +2,7 @@ package de.unisaarland.cs.se.selab.state.bids;
 
 import de.unisaarland.cs.se.selab.ConnectionUtils;
 import de.unisaarland.cs.se.selab.ConnectionWrapper;
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.commands.ActionResult;
 import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Player;
@@ -18,6 +19,7 @@ public final class MonsterBid extends Bid {
 
     @Override
     protected ActionResult bidEvalImpl(final Model model, final ConnectionWrapper connection) {
+        unlockSpell(model, connection, player, BidType.MONSTER, slot);
         if (this.slot == 3) {
             if (this.player.getFood() >= 1) {
                 ConnectionUtils.changeFood(this.player, -1, connection);

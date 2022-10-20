@@ -149,11 +149,6 @@ public final class BuildingState extends State {
         if (bidList.size() < 3) {
             final Bid bid = Bid.createBid(bidType, player, bidList.size() + 1);
             bidList.add(bid);
-            // lookup if this bid triggers a spell and add it to player.
-            final List<Spell> spells = model.getTriggeredSpell(bidType, bidList.size());
-            if (!spells.isEmpty()) {
-                player.addSpell(spells, model.getRound());
-            }
             biddingSquare.put(bidType, bidList);
         }
     }

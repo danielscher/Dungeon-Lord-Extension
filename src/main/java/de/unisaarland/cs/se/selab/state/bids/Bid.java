@@ -5,6 +5,8 @@ import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.commands.ActionResult;
 import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Player;
+import de.unisaarland.cs.se.selab.model.spells.Spell;
+import java.util.List;
 
 /**
  * Superclass for all bid types.
@@ -75,4 +77,17 @@ public abstract class Bid {
      * @return a result that indicates how the game should continue
      */
     protected abstract ActionResult bidEvalImpl(Model model, ConnectionWrapper connection);
+
+    /**
+     * adds the triggered spell to player and sends unlock event.
+     */
+    protected void unlockSpell(final Model model, final ConnectionWrapper connection,
+            final Player player, final BidType type,
+            final int slot) {
+        final List<Spell> spells = model.getTriggeredSpell(type, slot);
+        if (!spells.isEmpty()) {
+            player.addSpell(spells, model.getRound());
+            spells.forEach(spell -> connection.sendSpellUnlocked(spell.getId(), player.getId()));
+        }
+    }
 }

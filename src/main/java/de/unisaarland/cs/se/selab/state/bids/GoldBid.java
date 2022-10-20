@@ -1,6 +1,7 @@
 package de.unisaarland.cs.se.selab.state.bids;
 
 import de.unisaarland.cs.se.selab.ConnectionWrapper;
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.commands.ActionResult;
 import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Player;
@@ -20,6 +21,7 @@ public final class GoldBid extends Bid {
 
     @Override
     protected ActionResult bidEvalImpl(final Model model, final ConnectionWrapper connection) {
+        unlockSpell(model, connection, player, BidType.GOLD, slot);
         final int availableImps = this.player.getImps();
         if (availableImps <= 0) {
             return ActionResult.PROCEED;

@@ -3,6 +3,7 @@ package de.unisaarland.cs.se.selab.state.bids;
 
 import de.unisaarland.cs.se.selab.ConnectionUtils;
 import de.unisaarland.cs.se.selab.ConnectionWrapper;
+import de.unisaarland.cs.se.selab.comm.BidType;
 import de.unisaarland.cs.se.selab.commands.ActionResult;
 import de.unisaarland.cs.se.selab.model.Model;
 import de.unisaarland.cs.se.selab.model.Player;
@@ -19,6 +20,7 @@ public final class TunnelBid extends Bid {
 
     @Override
     protected ActionResult bidEvalImpl(final Model model, final ConnectionWrapper connection) {
+        unlockSpell(model, connection, player, BidType.TUNNEL, slot);
         this.player.setNumTunnelDigsAllowed(this.slot + 1);
         connection.sendDigTunnel(this.player.getId());
         return ConnectionUtils.executePlayerCommand(model, connection, State.Phase.PLACING_TUNNEL,

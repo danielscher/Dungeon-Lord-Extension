@@ -1,5 +1,5 @@
 {
-  "maxPlayers": 4,
+  "maxPlayers": 2,
   "years": 2,
   "dungeonSideLength": 5,
   "initialFood": 3,
@@ -1013,8 +1013,8 @@
     {
       "id": 19,
       "spellType": "BUFF",
-      "bidType": "ROOM",
-      "slot": 3,
+      "bidType": "FOOD",
+      "slot": 1,
       "healthPoints": 2
     },
     {
@@ -1033,9 +1033,10 @@
     },
     {
       "id": 23,
-      "spellType": "ROOM",
-      "bidType": "ROOM",
-      "slot": 1
+      "spellType": "RESOURCE",
+      "bidType": "NICENESS",
+      "slot": 1,
+      "gold": 1
     },
     {
       "id": 24,
