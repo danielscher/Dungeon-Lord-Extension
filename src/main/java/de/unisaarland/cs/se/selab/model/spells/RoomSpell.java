@@ -15,7 +15,7 @@ public class RoomSpell extends Spell {
     public boolean cast(final Player player, final ConnectionWrapper connection) {
         final int round = player.getRoundOfSpell(this);
         player.curseRooms(round);
-        connection.sendRoomsBlocked(player.getId(), round);
+        connection.sendRoomsBlocked(player.getId(), round + 1);
         return false;
     }
 }
