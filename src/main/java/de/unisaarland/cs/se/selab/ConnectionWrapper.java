@@ -428,7 +428,7 @@ public class ConnectionWrapper {
     public void sendMonsterRemoved(final int playerId, final int monsterId) {
         LOGGER.debug("(Broadcast) player {}'s monster {} was removed", playerId, monsterId);
         for (final int commId : getCommIds()) {
-            this.connection.sendMonsterRemoved(commId, playerId, monsterId);
+            this.connection.sendMonsterRemoved(commId, monsterId, playerId);
         }
     }
 
