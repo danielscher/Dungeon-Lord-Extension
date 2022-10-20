@@ -169,6 +169,9 @@ public class Player {
     }
 
     public boolean isCursed(final BidType bid, final int round) {
+        if (cursedBids.size() < round) {
+            return false;
+        }
         return this.cursedBids.get(round - 1).contains(bid);
     }
 
