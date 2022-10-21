@@ -11,8 +11,9 @@ final class SystemTestsRegistration {
     }
 
     static void registerSystemTests(final SystemTestManager manager) {
-        manager.registerTest(new RegistrationTest());
+        // manager.registerTest(new RegistrationTest());
         // manager.registerTest(new EmptyConfigTest());
-        // manager.registerTest(new TwoPlayFullGamePlus());
+        manager.registerTest(new TwoPlayerBuildingPhase());
+        //manager.registerTest(new TwoPlayerFullGame());
     }
 }

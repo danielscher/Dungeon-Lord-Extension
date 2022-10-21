@@ -19,6 +19,7 @@ public class Adventurer {
     private int healthBuff;
 
     private int healBuff;
+
     private int defuseBuff;
 
     public Adventurer(final int id, final int difficulty, final int healthPoints,
@@ -51,6 +52,18 @@ public class Adventurer {
         return (defuseValue + defuseBuff);
     }
 
+    public void setCurrentHealthPoints(final int healthPoints) {
+        this.currentHealthPoints = healthPoints;
+    }
+
+    public int getCurrentHealthPoints() {
+        return currentHealthPoints;
+    }
+
+    public int getHealthBuff() {
+        return healthBuff;
+    }
+
     /**
      * Heal an adventurer by the given amount.
      * <p>
@@ -79,10 +92,13 @@ public class Adventurer {
     public int damage(final int amount) {
         //first damage the buffed hp.
         int damage = amount;
+        int buffDamage = 0;
         if (amount >= healthBuff) {
-            damage -= healBuff;
+            buffDamage += healthBuff;
+            damage -= healthBuff;
             healthBuff = 0;
         } else {
+            buffDamage += damage;
             healthBuff -= damage;
         }
 
@@ -92,7 +108,7 @@ public class Adventurer {
         if (this.currentHealthPoints <= 0) {
             this.defeated = true;
         }
-        return effectiveDamage;
+        return effectiveDamage + buffDamage;
     }
 
     public boolean isDefeated() {
