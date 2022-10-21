@@ -19,6 +19,7 @@ public class StructureSpell extends Spell {
 
     @Override
     public boolean cast(final Player player, final ConnectionWrapper connection) {
+        this.cast = true;
         if (conquer) {
             return true;
         }

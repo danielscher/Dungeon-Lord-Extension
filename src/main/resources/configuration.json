@@ -1,11 +1,10 @@
 {
-  "maxPlayers": 2,
+  "maxPlayers": 4,
   "years": 2,
-  "dungeonSideLength": 4,
+  "dungeonSideLength": 5,
   "initialFood": 3,
   "initialGold": 3,
   "initialImps": 3,
-  "initialEvilness": 10,
   "monsters": [
     {
       "id": 0,
@@ -199,16 +198,14 @@
       "name": "Leo",
       "difficulty": 2,
       "healthPoints": 3,
-      "healValue": 1,
-      "magicPoints": 1
+      "healValue": 1
     },
     {
       "id": 2,
       "name": "Julia",
       "difficulty": 3,
-      "healthPoints": 2,
-      "defuseValue": 1,
-      "magicPoints": 1
+      "healthPoints": 4,
+      "defuseValue": 1
     },
     {
       "id": 3,
@@ -232,8 +229,7 @@
       "difficulty": 6,
       "healthPoints": 5,
       "healValue": 2,
-      "defuseValue": 1,
-      "magicPoints": 1
+      "defuseValue": 1
     },
     {
       "id": 6,
@@ -266,16 +262,14 @@
       "name": "Leo",
       "difficulty": 2,
       "healthPoints": 3,
-      "healValue": 1,
-      "magicPoints": 1
+      "healValue": 1
     },
     {
       "id": 10,
       "name": "Julia",
       "difficulty": 3,
       "healthPoints": 4,
-      "defuseValue": 1,
-      "magicPoints": 1
+      "defuseValue": 1
     },
     {
       "id": 11,
@@ -283,8 +277,7 @@
       "difficulty": 4,
       "healthPoints": 4,
       "healValue": 2,
-      "charge": false,
-      "magicPoints": 1
+      "charge": false
     },
     {
       "id": 12,
@@ -292,8 +285,7 @@
       "difficulty": 5,
       "healthPoints": 5,
       "defuseValue": 2,
-      "charge": true,
-      "magicPoints": 1
+      "charge": true
     },
     {
       "id": 13,
@@ -319,8 +311,7 @@
       "difficulty": 8,
       "healthPoints": 6,
       "healValue": 3,
-      "charge": false,
-      "magicPoints": 1
+      "charge": false
     },
     {
       "id": 16,
@@ -342,8 +333,7 @@
       "name": "Julia",
       "difficulty": 3,
       "healthPoints": 4,
-      "defuseValue": 1,
-      "magicPoints": 2
+      "defuseValue": 1
     },
     {
       "id": 19,
@@ -378,8 +368,7 @@
       "healthPoints": 6,
       "healValue": 2,
       "defuseValue": 2,
-      "charge": true,
-      "magicPoints": 1
+      "charge": true
     },
     {
       "id": 23,
@@ -387,8 +376,7 @@
       "difficulty": 8,
       "healthPoints": 6,
       "healValue": 3,
-      "charge": false,
-      "magicPoints": 1
+      "charge": false
     },
     {
       "id": 24,
@@ -402,8 +390,7 @@
       "name": "Leo",
       "difficulty": 2,
       "healthPoints": 3,
-      "healValue": 1,
-      "magicPoints": 1
+      "healValue": 1
     },
     {
       "id": 26,
@@ -419,8 +406,7 @@
       "difficulty": 4,
       "healthPoints": 4,
       "healValue": 2,
-      "charge": false,
-      "magicPoints": 1
+      "charge": false
     },
     {
       "id": 28,
@@ -437,8 +423,7 @@
       "difficulty": 6,
       "healthPoints": 5,
       "healValue": 2,
-      "defuseValue": 1,
-      "magicPoints": 3
+      "defuseValue": 1
     },
     {
       "id": 30,
@@ -447,8 +432,7 @@
       "healthPoints": 6,
       "healValue": 2,
       "defuseValue": 2,
-      "charge": true,
-      "magicPoints": 1
+      "charge": true
     },
     {
       "id": 31,
@@ -456,8 +440,7 @@
       "difficulty": 8,
       "healthPoints": 6,
       "healValue": 3,
-      "charge": false,
-      "magicPoints": 1
+      "charge": false
     }
   ],
   "traps": [
@@ -901,14 +884,14 @@
       "id": 0,
       "spellType": "RESOURCE",
       "bidType": "FOOD",
-      "slot": 1,
+      "slot": 2,
       "food": 2
     },
     {
       "id": 1,
       "spellType": "BUFF",
       "bidType": "ROOM",
-      "slot": 1,
+      "slot": 3,
       "healthPoints": 2
     },
     {
@@ -922,7 +905,7 @@
       "id": 3,
       "spellType": "BIDDING",
       "bidType": "NICENESS",
-      "slot": 1,
+      "slot": 2,
       "bidTypeBlocked": "MONSTER"
     },
     {
@@ -935,21 +918,21 @@
       "id": 5,
       "spellType": "RESOURCE",
       "bidType": "GOLD",
-      "slot": 1,
+      "slot": 3,
       "gold": 1
     },
     {
       "id": 6,
       "spellType": "RESOURCE",
       "bidType": "FOOD",
-      "slot": 1,
+      "slot": 2,
       "food": 99
     },
     {
       "id": 7,
       "spellType": "BUFF",
       "bidType": "MONSTER",
-      "slot": 1,
+      "slot": 3,
       "healValue": 2
     },
     {
@@ -963,7 +946,7 @@
       "id": 9,
       "spellType": "BIDDING",
       "bidType": "NICENESS",
-      "slot": 1,
+      "slot": 2,
       "bidTypeBlocked": "ROOM"
     },
     {
@@ -976,21 +959,21 @@
       "id": 11,
       "spellType": "RESOURCE",
       "bidType": "GOLD",
-      "slot": 1,
+      "slot": 3,
       "gold": 1
     },
     {
       "id": 12,
       "spellType": "RESOURCE",
       "bidType": "TRAP",
-      "slot": 1,
+      "slot": 2,
       "food": 2
     },
     {
       "id": 13,
       "spellType": "BUFF",
       "bidType": "ROOM",
-      "slot": 1,
+      "slot": 3,
       "defuseValue": 2
     },
     {
@@ -1004,7 +987,7 @@
       "id": 15,
       "spellType": "BIDDING",
       "bidType": "NICENESS",
-      "slot": 1,
+      "slot": 2,
       "bidTypeBlocked": "MONSTER"
     },
     {
@@ -1017,21 +1000,21 @@
       "id": 17,
       "spellType": "RESOURCE",
       "bidType": "GOLD",
-      "slot": 1,
+      "slot": 3,
       "gold": 1
     },
     {
       "id": 18,
       "spellType": "RESOURCE",
       "bidType": "FOOD",
-      "slot": 1,
+      "slot": 2,
       "food": 2
     },
     {
       "id": 19,
       "spellType": "BUFF",
       "bidType": "ROOM",
-      "slot": 1,
+      "slot": 3,
       "healthPoints": 2
     },
     {
@@ -1045,7 +1028,7 @@
       "id": 22,
       "spellType": "BIDDING",
       "bidType": "NICENESS",
-      "slot": 1,
+      "slot": 2,
       "bidTypeBlocked": "MONSTER"
     },
     {

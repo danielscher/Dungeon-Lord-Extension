@@ -16,6 +16,7 @@ public class RoomSpell extends Spell {
         final int round = player.getRoundOfSpell(this);
         player.curseRooms(round);
         connection.sendRoomsBlocked(player.getId(), round + 1);
+        this.cast = true;
         return false;
     }
 }

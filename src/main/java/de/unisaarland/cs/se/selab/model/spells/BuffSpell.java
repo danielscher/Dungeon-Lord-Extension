@@ -27,6 +27,7 @@ public class BuffSpell extends Spell {
             adv.setHealthBuff(healthBuff);
             adv.setDefuseBuff(defuseBuff);
         });
+        this.cast = true;
         return false;
     }
 }

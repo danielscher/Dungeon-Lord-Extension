@@ -18,6 +18,8 @@ public class BiddingSpell extends Spell {
     public boolean cast(final Player player, final ConnectionWrapper connection) {
         final int round = player.getRoundOfSpell(this);
         player.curseBid(blockBidType, round + 1);
+        connection.sendBidTypeBlocked(player.getId(), blockBidType, round + 1);
+        this.cast = true;
         return false;
     }
 }

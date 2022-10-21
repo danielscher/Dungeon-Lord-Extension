@@ -26,7 +26,9 @@ public class Player {
     private final Dungeon dungeon;
     private final List<Optional<BidType>> bids;
     private final List<BidType> lockedTypes;
-
+    private final Map<Integer, List<Spell>> spells = new HashMap<>();
+    private final Set<Integer> roomsCursedInRounds = new HashSet<>();
+    private final Map<Integer, List<BidType>> cursedBids = new HashMap<>();
     private int evilness;
     private int imps;
     private int gold;
@@ -34,15 +36,10 @@ public class Player {
     private int numTunnelDigsAllowed;
     private boolean alive;
     private int scorePoints;
-
     private int numCounterSpells;
-
     private int timesCountered;
     private int timesCursed;
     private int timesTriggeredLinus;
-    private final Map<Integer, List<Spell>> spells = new HashMap<>();
-    private final Set<Integer> roomsCursedInRounds = new HashSet<>();
-    private final List<List<BidType>> cursedBids = new ArrayList<>();
     private boolean spellCountered;
 
     public Player(final int id,
@@ -173,6 +170,12 @@ public class Player {
             return false;
         }
         return this.cursedBids.get(round - 1).contains(bid);
+    }
+
+    public void unlockCursedBidsInRound(final int round) {
+        if (cursedBids.containsKey(round - 1)) {
+            this.cursedBids.get(round - 1).clear();
+        }
     }
 
     /**
@@ -309,7 +312,15 @@ public class Player {
     }
 
     public void curseBid(final BidType bid, final int round) {
-        cursedBids.get(round - 1).add(bid);
+        if (cursedBids.containsKey(round - 1)) {
+            final List<BidType> vals = new ArrayList<>(cursedBids.get(round - 1));
+            vals.add(bid);
+            cursedBids.put(round - 1, vals);
+        } else {
+            final List<BidType> singeltonBid = new ArrayList<>();
+            singeltonBid.add(bid);
+            cursedBids.put(round - 1, singeltonBid);
+        }
     }
 
     public void resetBiddingSpell(final int round) {
@@ -390,9 +401,6 @@ public class Player {
         return this.monsters.remove(index);
     }
 
-    public void removeSpells() {
-        this.spells.clear();
-    }
 
     public Integer getTimesCursed() {
         return timesCursed;
@@ -402,7 +410,13 @@ public class Player {
         return timesTriggeredLinus;
     }
 
-    public Integer gettimesCountered() {
+    public Integer getTimesCountered() {
         return timesCountered;
+    }
+
+    public void removeCastSpells() {
+        for (final List<Spell> l : spells.values()) {
+            l.removeIf(Spell::isCast);
+        }
     }
 }

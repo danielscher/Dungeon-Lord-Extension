@@ -10,6 +10,7 @@ public abstract class Spell {
     private final BidType triggerBid;
     private final int triggerSlot;
     int cost;
+    boolean cast;
 
     protected Spell(final int id, final String triggerBid, final int triggerSlot, final int cost) {
         this.id = id;
@@ -35,5 +36,9 @@ public abstract class Spell {
 
     public int getCost() {
         return this.cost;
+    }
+
+    public boolean isCast() {
+        return this.cast;
     }
 }

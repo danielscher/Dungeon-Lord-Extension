@@ -52,16 +52,20 @@ public class Adventurer {
         return (defuseValue + defuseBuff);
     }
 
-    public void setCurrentHealthPoints(final int healthPoints) {
-        this.currentHealthPoints = healthPoints;
-    }
-
     public int getCurrentHealthPoints() {
         return currentHealthPoints;
     }
 
+    public void setCurrentHealthPoints(final int healthPoints) {
+        this.currentHealthPoints = healthPoints;
+    }
+
     public int getHealthBuff() {
         return healthBuff;
+    }
+
+    public void setHealthBuff(final int healthBuff) {
+        this.healthBuff = healthBuff;
     }
 
     /**
@@ -131,10 +135,6 @@ public class Adventurer {
         }
         healthBuff = 0;
         defuseBuff = 0;
-    }
-
-    public void setHealthBuff(final int healthBuff) {
-        this.healthBuff = healthBuff;
     }
 
     /**

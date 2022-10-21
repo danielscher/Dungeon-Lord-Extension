@@ -1,5 +1,7 @@
 package de.unisaarland.cs.se.selab.state;
 
+import static de.unisaarland.cs.se.selab.model.Player.MAX_EVILNESS;
+
 import de.unisaarland.cs.se.selab.ConnectionUtils;
 import de.unisaarland.cs.se.selab.ConnectionWrapper;
 import de.unisaarland.cs.se.selab.commands.ActionResult;
@@ -17,7 +19,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 
 /**
@@ -219,10 +220,7 @@ public final class CombatState extends State {
                 // i
                 if (player.getDungeon().imprisonAdventurer(adventurer)) {
                     connection.sendAdventurerImprisoned(adventurer.getId());
-                    linusPresent = checkIfLinusAppears(player, model.getRandom(),
-                            model.getMaxYear(),
-                            model.getYear()
-                    );
+                    linusPresent = checkIfLinusAppears(player, model);
                     if (model.getRound() == 4) {
                         linusPresent = false;
                     }
@@ -265,7 +263,7 @@ public final class CombatState extends State {
         titles.add(player -> player.getDungeon().getNumUnconqueredTiles());    // Battle
         titles.add(Player::getTimesCursed);                                    // Magic Proof
         titles.add(Player::getTimesLinusTriggered);                            // Penguin Visit
-        titles.add(Player::gettimesCountered);                                 // Counter Strike
+        titles.add(Player::getTimesCountered);                                 // Counter Strike
 
         // Evaluate all titles.
         for (final Function<Player, Integer> title : titles) {
@@ -313,9 +311,10 @@ public final class CombatState extends State {
     private ActionResult castSpells(final Player player, final int round) {
         final int advMagicPoints = player.getDungeon().getAdventurerMagicPoints();
         final int totalMagicPoints = linusPresent ? advMagicPoints + 3 : advMagicPoints;
-        boolean earlyConquerFlag = false;
+        boolean earlyConquerFlag;
         // cast all spells in FIFO.
-        for (final Spell spell : player.getSpellsForRound(round)) {
+        final List<Spell> spells = player.getSpellsForRound(round);
+        for (final Spell spell : spells) {
             // skip spell if adventurers don't have enough magic points.
             if (spell.getCost() > totalMagicPoints) {
                 continue;
@@ -335,11 +334,14 @@ public final class CombatState extends State {
                 }
                 // checks if player has actually countered a spell.
                 // if he didn't we cast spell.
-                if (!player.hasCountered()) {
-                    earlyConquerFlag = spell.cast(player, connection);
+                if (player.hasCountered()) {
+                    player.resetCounterFlag();
+                    // remove spell that has been countered.
+                    return ActionResult.PROCEED;
                 }
-                player.resetCounterFlag();
             }
+            earlyConquerFlag = spell.cast(player, connection);
+            // remove spells that has been cast.
             // if spell was a structure spell that conquers we set the flag.
             if (earlyConquerFlag) {
                 earlyConquer = true;
@@ -348,24 +350,26 @@ public final class CombatState extends State {
         return ActionResult.PROCEED;
     }
 
-    private boolean checkIfLinusAppears(final Player player, final Random random, final int maxYear,
-            final int currYear) {
+    private boolean checkIfLinusAppears(final Player player, final Model model) {
 
-        final int result = player.getEvilness() + currYear;
-        final int dieBound = Player.MAX_EVILNESS + maxYear;
-        final int dieCast = random.nextInt(dieBound + 1);
+        final int result = player.getEvilness() + model.getYear();
+        final int dieBound = MAX_EVILNESS + model.getMaxYear();
+        final int dieCast = model.getRandom().nextInt(dieBound);
 
-        if (result > dieCast) {
-            player.triggerLinus();
-            connection.sendArchMageArrived(player.getId());
-            final int monsterAmount = player.getNumMonsters();
-            if (monsterAmount > 0) {
-                final Monster removedMonster = player.removeMonster(random.nextInt(monsterAmount));
-                connection.sendMonsterRemoved(player.getId(), removedMonster.getId());
-            }
-            return true;
+        if (result <= dieCast) {
+            return false;
         }
-        return false;
+        player.triggerLinus();
+        connection.sendArchMageArrived(player.getId());
+        final int monsterAmount = player.getNumMonsters();
+        // remove random monster from player and set it to be ignored for combat.
+        if (monsterAmount > 0) {
+            final Monster removedMonster = player.removeMonster(
+                    model.getRandom().nextInt(monsterAmount));
+            removedMonster.setIgnore(true);
+            connection.sendMonsterRemoved(player.getId(), removedMonster.getId());
+        }
+        return true;
     }
 }
 

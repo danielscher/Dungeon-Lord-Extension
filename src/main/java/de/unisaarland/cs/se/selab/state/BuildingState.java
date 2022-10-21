@@ -48,7 +48,7 @@ public final class BuildingState extends State {
             player.unlockBidTypes();
             player.wakeUpMonsters();
             player.getDungeon().clearAdventurers();
-            player.removeSpells();
+            player.removeCastSpells();
         }
 
         while (model.hasNextRound()) {
@@ -203,6 +203,7 @@ public final class BuildingState extends State {
             }
             // Lock or return currently used BitTypes.
             player.unlockBidTypes();
+            player.unlockCursedBidsInRound(model.getRound());
             connection.sendBidRetrieved(player.getId(), player.getPlacedBidTypes().get(0));
             player.lockBidTypes();
             player.clearBidTypes();

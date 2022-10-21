@@ -40,5 +40,6 @@ public class ResourceSpell extends Spell {
             player.changeFood(effectiveAmount);
             connection.sendFoodChanged(player.getId(), effectiveAmount);
         }
+        this.cast = true;
     }
 }

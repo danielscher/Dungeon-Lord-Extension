@@ -763,7 +763,7 @@
     {
       "id": 0,
       "name": "Mint",
-      "restriction": "LOWER_HALF",
+      "restriction": "INNER_RING",
       "activation": 3,
       "gold": 1
     },
@@ -835,7 +835,7 @@
     {
       "id": 10,
       "name": "Mint",
-      "restriction": "LOWER_HALF",
+      "restriction": "UPPER_HALF",
       "activation": 3,
       "gold": 1
     },
@@ -958,8 +958,8 @@
     {
       "id": 11,
       "spellType": "RESOURCE",
-      "bidType": "GOLD",
-      "slot": 3,
+      "bidType": "NICENESS",
+      "slot": 1,
       "gold": 1
     },
     {

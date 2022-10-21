@@ -14,6 +14,5 @@ final class SystemTestsRegistration {
         // manager.registerTest(new RegistrationTest());
         // manager.registerTest(new EmptyConfigTest());
         manager.registerTest(new TwoPlayerBuildingPhase());
-        //manager.registerTest(new TwoPlayerFullGame());
     }
 }

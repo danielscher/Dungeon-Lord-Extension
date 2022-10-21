@@ -10,6 +10,8 @@ public abstract class DefensiveMeasure {
     private final AttackStrategy attackStrategy;
     private int target;
 
+    private boolean ignore;
+
     protected DefensiveMeasure(final int id, final int damage,
             final AttackStrategy attackStrategy) {
         this.id = id;
@@ -24,6 +26,9 @@ public abstract class DefensiveMeasure {
     }
 
     public int getDamage() {
+        if (ignore) {
+            return 0;
+        }
         return damage;
     }
 
@@ -42,5 +47,11 @@ public abstract class DefensiveMeasure {
     public void setTarget(final int target) {
         this.target = target;
     }
+
+
+    public void setIgnore(final boolean ignore) {
+        this.ignore = ignore;
+    }
+
 
 }
