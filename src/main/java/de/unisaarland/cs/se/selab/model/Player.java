@@ -419,4 +419,16 @@ public class Player {
             l.removeIf(Spell::isCast);
         }
     }
+
+    public void removeSpells() {
+        this.spells.clear();
+    }
+
+    public Set<Integer> getRoomsCursedInRounds() {
+        return roomsCursedInRounds;
+    }
+
+    public boolean areRoomsCurseInRound(final int round) {
+        return roomsCursedInRounds.contains(round - 1);
+    }
 }
