@@ -6,17 +6,15 @@ import de.unisaarland.cs.se.selab.systemtest.api.SystemTest;
 import de.unisaarland.cs.se.selab.systemtest.api.Utils;
 import java.util.Set;
 
-public class TwoPlayerBuildingPhase extends SystemTest {
+public class TwoPlayerCombatPhase extends SystemTest {
 
-
-    public TwoPlayerBuildingPhase() {
-        super(TwoPlayerBuildingPhase.class, false);
+    public TwoPlayerCombatPhase() {
+        super(TwoPlayerCombatPhase.class, false);
     }
-
 
     @Override
     protected String createConfig() {
-        return Utils.loadResource(TwoPlayerBuildingPhase.class, "config_fullgameplus.json");
+        return Utils.loadResource(TwoPlayerBuildingPhase.class, "config_destroyRoom.json");
     }
 
     @Override
@@ -29,16 +27,14 @@ public class TwoPlayerBuildingPhase extends SystemTest {
         return Set.of(0, 1);
     }
 
-    @Override
-    protected void run() throws TimeoutException, AssertionError {
-
+    private void buildingPhase() throws TimeoutException {
         register2Players();
         roundOneBidding();
         roundTwoBidding();
         roundThreeBidding();
         roundFourBidding();
-        leave();
     }
+
 
     private void register2Players() throws TimeoutException {
         //register 2 players
@@ -724,6 +720,73 @@ public class TwoPlayerBuildingPhase extends SystemTest {
         sendLeave(1);
     }
 
+    @Override
+    protected void run() throws TimeoutException, AssertionError {
+
+        buildingPhase();
+        combatRoundOnePlayer0();
+        leave();
+
+
+    }
+
+    private void combatRoundOnePlayer0() throws TimeoutException {
+        assertSetBattleGround(0);
+        assertActNow(0);
+        sendBattleGround(0, 0, 0);
+        assertBattleGroundSet(0, 0, 0, 0);
+        assertBattleGroundSet(1, 0, 0, 0);
+        assertDefendYourself(0);
+        assertActNow(0);
+        sendMonster(0, 20);
+        assertMonsterPlaced(0, 20, 0);
+        assertMonsterPlaced(1, 20, 0);
+        assertActNow(0);
+        sendTrap(0, 0);
+        assertActionFailed(0);
+        assertActNow(0);
+        sendEndTurn(0);
+        assertSpellCast(0, 19, 0);
+        assertSpellCast(1, 19, 0);
+        assertCounterSpell(0);
+        assertActNow(0);
+        sendEndTurn(0);
+        assertRoomRemoved(0, 0, 0);
+        assertRoomRemoved(1, 0, 0);
+        assertSpellCast(0, 23, 0);
+        assertSpellCast(1, 23, 0);
+        assertCounterSpell(0);
+        assertActNow(0);
+        sendActivateRoom(0, 0);
+        assertActionFailed(0);
+        assertActNow(0);
+        sendEndTurn(0);
+        assertGoldChanged(0, -1, 0);
+        assertGoldChanged(1, -1, 0);
+        //monster 2 damage multi
+        assertAdventurerDamaged(0, 29, 2);
+        assertAdventurerDamaged(1, 29, 2);
+        assertAdventurerDamaged(0, 2, 2);
+        assertAdventurerDamaged(1, 2, 2);
+        assertAdventurerDamaged(0, 18, 2);
+        assertAdventurerDamaged(1, 18, 2);
+        // fatigue
+        assertAdventurerDamaged(0, 29, 2);
+        assertAdventurerDamaged(1, 29, 2);
+        assertAdventurerImprisoned(0, 2);
+        assertAdventurerImprisoned(1, 2);
+        assertArchmageArrived(0, 0);
+        assertArchmageArrived(1, 0);
+        assertMonsterRemoved(0, 20, 0);
+        assertMonsterRemoved(1, 20, 0);
+        // reduced fatigue
+        assertAdventurerDamaged(0, 18, 1);
+        assertAdventurerDamaged(1, 18, 1);
+        assertTunnelConquered(0, 29, 0, 0);
+        assertTunnelConquered(1, 29, 0, 0);
+        assertEvilnessChanged(0, -1, 0);
+        assertEvilnessChanged(1, -1, 0);
+        assertAdventurerHealed(0, 2, 29, 29);
+        assertAdventurerHealed(1, 2, 29, 29);
+    }
 }
-
-
