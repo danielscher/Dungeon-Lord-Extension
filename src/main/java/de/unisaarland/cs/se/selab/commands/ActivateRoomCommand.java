@@ -40,11 +40,16 @@ public class ActivateRoomCommand extends Command {
                         .orElse(Boolean.FALSE)
                 ).findAny();
 
+
         if (optTunnel.isEmpty()) {
             connection.sendActionFailed(getId(), "You don't own a room with this id.");
             return ActionResult.RETRY;
         }
 
+        if (player.areRoomsCurseInRound(model.getRound())) {
+            connection.sendActionFailed(getId(), "Rooms are blocked for this round");
+            return ActionResult.RETRY;
+        }
         if (optTunnel.get().isConquered()) {
             connection.sendActionFailed(getId(), "This room is already conquered.");
             return ActionResult.RETRY;
